@@ -1,5 +1,6 @@
 package org.example.opsflow.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class JwtUtil {
         this.expiration = expiration;
     }
 
+
     public String generateToken(Long userId,String username) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expiration);
@@ -30,5 +32,14 @@ public class JwtUtil {
                 .expiration(expirationDate)
                 .signWith(secretKey)
                 .compact();
+    }
+
+
+    public Claims parseToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

@@ -1,6 +1,7 @@
 package org.example.opsflow.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.opsflow.auth.dto.CurrentUserResponse;
 import org.example.opsflow.auth.dto.LoginRequest;
 import org.example.opsflow.auth.dto.LoginResponse;
 import org.example.opsflow.auth.dto.RegisterRequest;
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest loginRequest) {
         User user = userMapper.findByUsername(loginRequest.getUsername());
         if(user == null){
-            throw new BusinessException(40002,"用户名不存在");
+            throw new BusinessException(40004,"用户名不存在");
         }
         if(!passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())){
             throw new BusinessException(40002,"密码错误");
@@ -49,5 +50,14 @@ public class AuthServiceImpl implements AuthService {
 
 
         return new LoginResponse(token);
+    }
+
+    @Override
+    public CurrentUserResponse getCurrentUser(String username) {
+        User user = userMapper.findByUsername(username);
+        if(user == null){
+            throw new BusinessException(40004,"用户名不存在");
+        }
+        return new CurrentUserResponse(user.getId(),user.getUsername(),user.getRealName(),user.getEmail(),user.getPhone(),user.getDepartmentId(),user.getStatus());
     }
 }

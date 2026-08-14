@@ -18,6 +18,6 @@ public interface UserMapper {
     @Select("SELECT COUNT(*)>0 FROM sys_user WHERE username = #{username}")
     boolean existsByUsername(String username);
 
-    @Select("SELECT id,username,password,status FROM sys_user WHERE username = #{username}")
+    @Select("SELECT id,username,password,status,real_name,email,phone,department_id FROM sys_user WHERE username = #{username}")
     User findByUsername(String username);
 }
