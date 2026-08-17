@@ -13,3 +13,6 @@ spring:
 jwt:
   secret: opsflow-jwt-secret-key-for-development-2026
   expiration: 7200000
+
+mybatis:
+  mapper-locations: classpath*:/mapper/**/*.xml

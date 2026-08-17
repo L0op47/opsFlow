@@ -1,11 +1,12 @@
 package org.example.opsflow.user.mapper;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.example.opsflow.user.entity.User;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -20,4 +21,14 @@ public interface UserMapper {
 
     @Select("SELECT id,username,password,status,real_name,email,phone,department_id FROM sys_user WHERE username = #{username}")
     User findByUsername(String username);
+
+
+    List<User> findAll();
+
+
+    @Update("UPDATE sys_user SET status = #{status},update_time = NOW() WHERE id = #{id}")
+    int updateUserStatus(Long id, Integer status);
+
+    @Select("SELECT id,username,password,status,real_name,email,phone,department_id FROM sys_user WHERE id = #{id}")
+    User findById(Long id);
 }
