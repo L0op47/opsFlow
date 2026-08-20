@@ -1,5 +1,6 @@
 package org.example.opsflow.user.mapper;
 
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -26,9 +27,12 @@ public interface UserMapper {
     List<User> findAll();
 
 
-    @Update("UPDATE sys_user SET status = #{status},update_time = NOW() WHERE id = #{id}")
+    @Update("UPDATE sys_user SET status = #{status},update_time = LOCALTIMESTAMP WHERE id = #{id}")
     int updateUserStatus(Long id, Integer status);
 
     @Select("SELECT id,username,password,status,real_name,email,phone,department_id FROM sys_user WHERE id = #{id}")
     User findById(Long id);
+
+    @Update("UPDATE sys_user SET department_id = #{departmentId},update_time = LOCALTIMESTAMP WHERE id = #{id}")
+    int updateUserDepartment(Long id, Long departmentId);
 }

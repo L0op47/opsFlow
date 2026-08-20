@@ -5,6 +5,9 @@ import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.department.entiy.Department;
+import org.example.opsflow.department.mapper.DepartmentMapper;
+import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
@@ -20,6 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
+    private final DepartmentMapper departmentMapper;
 
     @Override
     public void updateUserStatus(Long id, Integer status) {
@@ -35,6 +39,28 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(50001,"用户状态修改失败");
         }
 
+    }
+
+    @Override
+    public void assignDepartment(Long id, AssignDepartmentRequest request) {
+        User user = userMapper.findById(id);
+        if(user == null){
+            throw new BusinessException(40006,"用户不存在");
+        }
+        if(Objects.equals(user.getDepartmentId(),request.getDepartmentId())){
+            return;
+        }
+        Department department = departmentMapper.findById(request.getDepartmentId());
+        if(department == null){
+            throw new BusinessException(40008,"部门不存在");
+        }
+        if(department.getStatus() == 0){
+            throw new BusinessException(40009,"部门已经被禁用");
+        }
+        int affectedRows = userMapper.updateUserDepartment(id,request.getDepartmentId());
+        if(affectedRows != 1){
+            throw new BusinessException(50001,"用户部门修改失败");
+        }
     }
 
     @Override

@@ -1,9 +1,6 @@
 package org.example.opsflow.department.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.example.opsflow.department.entiy.Department;
 
 import java.util.List;
@@ -22,4 +19,10 @@ public interface DepartmentMapper {
 
     @Select("SELECT id,name,code,status FROM sys_department ORDER BY id DESC ")
     List<Department> findAll();
+
+    @Update("UPDATE sys_department SET name = #{name},code = #{code},update_at = CURRENT_TIMESTAMP WHERE id = #{id}")
+    int updateDepartment(Department department);
+
+    @Select("SELECT id,name,code,status FROM sys_department WHERE id = #{id}")
+    Department findById(Long id);
 }

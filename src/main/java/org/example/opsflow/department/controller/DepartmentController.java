@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
+import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.response.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
 import org.springframework.web.bind.annotation.*;
@@ -27,5 +28,13 @@ public class DepartmentController {
     public ApiResponse<List<DepartmentResponse>> getDepartmentList(){
         List<DepartmentResponse> departments = departmentService.getDepartmentList();
         return ApiResponse.success(departments);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<DepartmentResponse> updateDepartment(@PathVariable Long id,
+                                                            @Valid @RequestBody UpdateDepartmentRequest request){
+        DepartmentResponse departmentResponse = departmentService.updateDepartment(id,request);
+        return ApiResponse.success(departmentResponse);
+
     }
 }

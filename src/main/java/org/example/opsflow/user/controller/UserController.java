@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UpdateUserStatusRequest;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.service.UserService;
@@ -29,6 +30,15 @@ public class UserController {
             @Valid @RequestBody UpdateUserStatusRequest updateUserStatusRequest
     ){
         userService.updateUserStatus(id,updateUserStatusRequest.getStatus());
+        return ApiResponse.success();
+    }
+
+    @PatchMapping("/{id}/department")
+    public ApiResponse<Void> assignDepartment(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignDepartmentRequest request
+    ){
+        userService.assignDepartment(id,request);
         return ApiResponse.success();
     }
 }

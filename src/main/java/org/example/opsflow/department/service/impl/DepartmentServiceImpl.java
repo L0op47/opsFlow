@@ -3,6 +3,7 @@ package org.example.opsflow.department.service.impl;
 import lombok.AllArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
+import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
 import org.example.opsflow.department.response.DepartmentResponse;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -47,6 +50,33 @@ public class DepartmentServiceImpl implements DepartmentService {
             departmentResponses.add(toDepartmentResponse(department));
         }
         return departmentResponses;
+    }
+
+    @Override
+    public DepartmentResponse updateDepartment(Long id, UpdateDepartmentRequest request) {
+
+        Department department = departmentMapper.findById(id);
+        if(department == null){
+            throw new BusinessException(40008,"该部门不存在");
+        }
+        String name =  request.getName().trim();
+        String code =  request.getCode().trim().toUpperCase(Locale.ROOT);
+        if(Objects.equals(department.getName(),name) &&  Objects.equals(department.getCode(),code)){
+            return toDepartmentResponse(department);
+        }
+        department.setName(name);
+        department.setCode(code);
+        try{
+            int affectedRows = departmentMapper.updateDepartment(department);
+            if(affectedRows != 1){
+                throw new BusinessException(50002,"部门修改失败");
+            }
+
+        }catch (DuplicateKeyException e){
+            throw new BusinessException(40007,"部门代码已经存在");
+        }
+
+        return toDepartmentResponse(department);
     }
 
     private  DepartmentResponse toDepartmentResponse(Department department){
