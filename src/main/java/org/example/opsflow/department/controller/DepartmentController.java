@@ -3,6 +3,7 @@ package org.example.opsflow.department.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
+import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.response.DepartmentResponse;
@@ -40,12 +41,11 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}/members")
-    public ApiResponse<List<UserResponse>> getDepartmentMembers(
+    public ApiResponse<PageResponse<UserResponse>> getDepartmentMembers(
             @PathVariable Long id,
             @RequestParam(defaultValue = "1",name = "page") int page,
             @RequestParam(defaultValue = "10",name = "size") int size
     ){
-        List<UserResponse> users = departmentService.getDepartmentMembers(id,page,size);
-        return ApiResponse.success(users);
+        return ApiResponse.success(departmentService.getDepartmentMembers(id,page,size));
     }
 }

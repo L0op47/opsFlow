@@ -1,5 +1,6 @@
 package org.example.opsflow.department.service;
 
+import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.response.DepartmentResponse;
@@ -14,5 +15,5 @@ public interface DepartmentService {
 
     DepartmentResponse updateDepartment(Long id, UpdateDepartmentRequest request);
 
-    List<UserResponse> getDepartmentMembers(Long id, int page, int size);
+    PageResponse<UserResponse> getDepartmentMembers(Long id, int page, int size);
 }

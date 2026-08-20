@@ -1,8 +1,10 @@
 package org.example.opsflow.department.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
+import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.entiy.Department;
@@ -85,8 +87,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<UserResponse> getDepartmentMembers(Long id, int page, int size) {
-        exitDepartment(id);
+    public PageResponse<UserResponse> getDepartmentMembers(Long id, int page, int size) {
         if(page < 1){
             throw new BusinessException(40004,"页码必须大于1");
 
@@ -94,14 +95,21 @@ public class DepartmentServiceImpl implements DepartmentService {
         if(size < 1 || size > 100){
             throw new BusinessException(40004,"每页的数量必须在1-100之间");
         }
+        exitDepartment(id);
         PageHelper.startPage(page,size);
 
         List<User> users = userMapper.findByDepartmentId(id);
-        List<UserResponse> userResponses = new ArrayList<>();
+        PageInfo<User> pageInfo = new PageInfo<>(users);
+        List<UserResponse> records = new ArrayList<>();
         for(User user : users){
-            userResponses.add(toUserResponse(user));
+            records.add(toUserResponse(user));
         }
-        return userResponses;
+        return new PageResponse<>(
+                records,
+                pageInfo.getTotal(),
+                page,
+                size
+        );
 
     }
 
