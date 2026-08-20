@@ -1,5 +1,6 @@
 package org.example.opsflow.department.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import lombok.AllArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
@@ -8,6 +9,9 @@ import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
 import org.example.opsflow.department.response.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
+import org.example.opsflow.user.dto.UserResponse;
+import org.example.opsflow.user.entity.User;
+import org.example.opsflow.user.mapper.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +20,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static org.example.opsflow.common.utils.Utils.toDepartmentResponse;
+import static org.example.opsflow.common.utils.Utils.toUserResponse;
+
 @Service
 @AllArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentMapper departmentMapper;
+    private final UserMapper userMapper;
 
     @Override
     public DepartmentResponse createDepartment(CreateDepartmentRequest createDepartmentRequest) {
@@ -55,10 +63,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentResponse updateDepartment(Long id, UpdateDepartmentRequest request) {
 
-        Department department = departmentMapper.findById(id);
-        if(department == null){
-            throw new BusinessException(40008,"该部门不存在");
-        }
+        Department department = exitDepartment(id);
         String name =  request.getName().trim();
         String code =  request.getCode().trim().toUpperCase(Locale.ROOT);
         if(Objects.equals(department.getName(),name) &&  Objects.equals(department.getCode(),code)){
@@ -79,13 +84,34 @@ public class DepartmentServiceImpl implements DepartmentService {
         return toDepartmentResponse(department);
     }
 
-    private  DepartmentResponse toDepartmentResponse(Department department){
-        DepartmentResponse response = new DepartmentResponse();
-        response.setCode(department.getCode());
-        response.setName(department.getName());
-        response.setStatus(department.getStatus());
-        response.setId(department.getId());
+    @Override
+    public List<UserResponse> getDepartmentMembers(Long id, int page, int size) {
+        exitDepartment(id);
+        if(page < 1){
+            throw new BusinessException(40004,"页码必须大于1");
 
-        return response;
+        }
+        if(size < 1 || size > 100){
+            throw new BusinessException(40004,"每页的数量必须在1-100之间");
+        }
+        PageHelper.startPage(page,size);
+
+        List<User> users = userMapper.findByDepartmentId(id);
+        List<UserResponse> userResponses = new ArrayList<>();
+        for(User user : users){
+            userResponses.add(toUserResponse(user));
+        }
+        return userResponses;
+
     }
+
+    private Department exitDepartment(Long id){
+        Department department = departmentMapper.findById(id);
+        if(department == null){
+            throw new BusinessException(40008,"该部门不存在");
+        }
+        return department;
+    }
+
+
 }

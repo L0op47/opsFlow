@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.example.opsflow.common.utils.Utils.toUserResponse;
+
 
 @Service
 @RequiredArgsConstructor
@@ -91,15 +93,5 @@ public class UserServiceImpl implements UserService {
                 page,
                 size);
     }
-    private UserResponse toUserResponse(User user){
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getRealName(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getDepartmentId(),
-                user.getStatus()
-        );
-    }
+
 }

@@ -16,4 +16,18 @@
         FROM sys_user
         ORDER BY id DESC
     </select>
+
+    <select id="findByDepartmentId"
+            resultType="org.example.opsflow.user.entity.User">
+        SELECT id,
+        username,
+        real_name AS realName,
+        email,
+        phone,
+        department_id AS departmentId,
+        status
+        FROM sys_user
+        WHERE department_id = #{id}
+        ORDER BY id DESC
+    </select>
 </mapper>

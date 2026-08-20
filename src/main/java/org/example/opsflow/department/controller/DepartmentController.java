@@ -7,6 +7,7 @@ import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.response.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
+import org.example.opsflow.user.dto.UserResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +37,15 @@ public class DepartmentController {
         DepartmentResponse departmentResponse = departmentService.updateDepartment(id,request);
         return ApiResponse.success(departmentResponse);
 
+    }
+
+    @GetMapping("/{id}/members")
+    public ApiResponse<List<UserResponse>> getDepartmentMembers(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "size") int size
+    ){
+        List<UserResponse> users = departmentService.getDepartmentMembers(id,page,size);
+        return ApiResponse.success(users);
     }
 }

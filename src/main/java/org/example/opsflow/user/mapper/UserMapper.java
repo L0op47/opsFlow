@@ -1,6 +1,5 @@
 package org.example.opsflow.user.mapper;
 
-
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -35,4 +34,7 @@ public interface UserMapper {
 
     @Update("UPDATE sys_user SET department_id = #{departmentId},update_time = LOCALTIMESTAMP WHERE id = #{id}")
     int updateUserDepartment(Long id, Long departmentId);
+
+
+    List<User> findByDepartmentId(Long id);
 }
