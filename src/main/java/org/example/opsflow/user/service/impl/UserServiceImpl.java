@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResponse<UserResponse> getUserPage(int page, int size) {
         if(page < 1){
-            throw new BusinessException(40004,"页码必须大于1");
+            throw new BusinessException(40004,"页码必须大于等于1");
 
         }
         if(size < 1 || size > 100){

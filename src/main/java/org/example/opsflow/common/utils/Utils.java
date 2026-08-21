@@ -5,7 +5,7 @@ import org.example.opsflow.department.response.DepartmentResponse;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 
-public class Utils {
+public final class  Utils {
     public static DepartmentResponse toDepartmentResponse(Department department){
         DepartmentResponse response = new DepartmentResponse();
         response.setCode(department.getCode());
