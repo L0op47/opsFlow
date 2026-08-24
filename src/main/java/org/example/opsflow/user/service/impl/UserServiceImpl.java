@@ -7,6 +7,7 @@ import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
+import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
@@ -14,11 +15,9 @@ import org.example.opsflow.user.mapper.UserMapper;
 import org.example.opsflow.user.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.example.opsflow.common.utils.Utils.toUserResponse;
 
 
 @Service
@@ -26,6 +25,7 @@ import static org.example.opsflow.common.utils.Utils.toUserResponse;
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final DepartmentMapper departmentMapper;
+    private final UserConverter userConverter;
 
     @Override
     public void updateUserStatus(Long id, Integer status) {
@@ -81,11 +81,7 @@ public class UserServiceImpl implements UserService {
 
         PageInfo<User> pageInfo = new PageInfo<>(users);
 
-        List<UserResponse> records = new ArrayList<>();
-
-        for(User user : users){
-            records.add(toUserResponse(user));
-        }
+        List<UserResponse> records = userConverter.toUserResponseList(users);
 
         return new PageResponse<>(
                 records,

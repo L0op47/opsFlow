@@ -5,31 +5,32 @@ import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.department.converter.DepartmentConverter;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
 import org.example.opsflow.department.response.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
+import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import static org.example.opsflow.common.utils.Utils.toDepartmentResponse;
-import static org.example.opsflow.common.utils.Utils.toUserResponse;
 
 @Service
 @AllArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentMapper departmentMapper;
     private final UserMapper userMapper;
+    private final UserConverter userConverter;
+    private final DepartmentConverter departmentConverter;
 
     @Override
     public DepartmentResponse createDepartment(CreateDepartmentRequest createDepartmentRequest) {
@@ -48,18 +49,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         }catch (DuplicateKeyException e){
             throw new BusinessException(40007,"部门代码已经存在");
         }
-        return toDepartmentResponse(department);
+        return departmentConverter.toDepartmentResponse(department);
     }
 
     @Override
     public List<DepartmentResponse> getDepartmentList() {
         List<Department> departments = departmentMapper.findAll();
 
-        List<DepartmentResponse> departmentResponses = new ArrayList<>();
-        for(Department department : departments){
-            departmentResponses.add(toDepartmentResponse(department));
-        }
-        return departmentResponses;
+        return departmentConverter.toDepartmentResponseList(departments);
     }
 
     @Override
@@ -69,7 +66,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         String name =  request.getName().trim();
         String code =  request.getCode().trim().toUpperCase(Locale.ROOT);
         if(Objects.equals(department.getName(),name) &&  Objects.equals(department.getCode(),code)){
-            return toDepartmentResponse(department);
+            return departmentConverter.toDepartmentResponse(department);
         }
         department.setName(name);
         department.setCode(code);
@@ -83,7 +80,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new BusinessException(40007,"部门代码已经存在");
         }
 
-        return toDepartmentResponse(department);
+        return departmentConverter.toDepartmentResponse(department);
     }
 
     @Override
@@ -100,10 +97,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         List<User> users = userMapper.findByDepartmentId(id);
         PageInfo<User> pageInfo = new PageInfo<>(users);
-        List<UserResponse> records = new ArrayList<>();
-        for(User user : users){
-            records.add(toUserResponse(user));
-        }
+        List<UserResponse> records = userConverter.toUserResponseList(users);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),
