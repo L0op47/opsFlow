@@ -14,7 +14,7 @@ public class User {
     private String phone;
     private Long departmentId;
     private Integer status;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

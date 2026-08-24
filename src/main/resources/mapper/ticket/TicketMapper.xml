@@ -3,6 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.opsflow.ticket.mapper.TicketMapper">
+    <sql id="Base_Column_List">
+        id,
+        ticket_no,
+        title,
+        description,
+        category,
+        priority,
+        status,
+        creator_id,
+        assignee_id,
+        department_id,
+        asset_id,
+        created_at,
+        accepted_at,
+        resolved_at,
+        closed_at,
+        deadline_at,
+        updated_at
+    </sql>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.ticket.entity.Ticket" useGeneratedKeys="true">
         insert into sys_ticket
         (ticket_no,title,description,category,priority,
@@ -15,4 +34,13 @@
         #{updatedAt,jdbcType=TIMESTAMP})
     </insert>
 
+
+    <select id="findByCreatorId"
+            resultType="org.example.opsflow.ticket.entity.Ticket">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_ticket
+        WHERE creator_id = #{creatorId}
+        ORDER BY created_at DESC,id DESC
+    </select>
 </mapper>

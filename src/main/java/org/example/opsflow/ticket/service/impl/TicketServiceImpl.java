@@ -1,9 +1,14 @@
 package org.example.opsflow.ticket.service.impl;
 
-import lombok.AllArgsConstructor;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
+import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.ticket.converter.TicketConverter;
 import org.example.opsflow.ticket.dto.CreateTicketRequest;
-import org.example.opsflow.ticket.dto.TicketResponse;
+import org.example.opsflow.ticket.dto.TicketDetailResponse;
+import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.entity.Ticket;
 import org.example.opsflow.ticket.enums.TicketPriority;
 import org.example.opsflow.ticket.enums.TicketStatus;
@@ -16,18 +21,19 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import static org.example.opsflow.ticket.converter.TicketConverter.toTicketResponse;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
+    private final TicketConverter ticketConverter;
     @Override
-    public TicketResponse createTicket(CreateTicketRequest request, String name) {
+    public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
         User creator = userMapper.findByUsername(name);
         if(creator == null){
             throw new BusinessException(40006,"当前用户不存在");
@@ -61,7 +67,32 @@ public class TicketServiceImpl implements TicketService {
         if (affectedRows != 1){
             throw new BusinessException(50003,"工单创建失败");
         }
-        return toTicketResponse(ticket);
+        return ticketConverter.toDetailResponse(ticket);
+    }
+
+    @Override
+    public PageResponse<TicketSummaryResponse> getMyTickets(int page, int size, String name) {
+        if(page < 1){
+            throw new BusinessException(40004,"页码必须大于等于1");
+
+        }
+        if(size < 1 || size > 100){
+            throw new BusinessException(40004,"每页的数量必须在1-100之间");
+        }
+        User user = userMapper.findByUsername(name);
+        if(user == null){
+            throw new BusinessException(40006,"用户不存在");
+        }
+        PageHelper.startPage(page,size);
+        List<Ticket> tickets = ticketMapper.findByCreatorId(user.getId());
+        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
+        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        return new PageResponse<>(
+                records,
+                pageInfo.getTotal(),
+                page,
+                size
+        );
     }
 
     private String generateTicketNo(){

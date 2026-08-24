@@ -7,7 +7,7 @@ import org.example.opsflow.ticket.enums.TicketStatus;
 import java.time.LocalDateTime;
 
 @Data
-public class TicketResponse {
+public class TicketDetailResponse {
     Long id;
     String ticketNo;
     String title;
