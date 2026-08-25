@@ -10,4 +10,6 @@ public interface TicketService {
     TicketDetailResponse createTicket(@Valid CreateTicketRequest request, String name);
 
     PageResponse<TicketSummaryResponse> getMyTickets(int page, int size, String name);
+
+    TicketDetailResponse getTicketDetail(Long id, String name);
 }

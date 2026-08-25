@@ -31,13 +31,16 @@ public class TicketController {
             Authentication authentication,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
-        PageResponse<TicketSummaryResponse> tickets = ticketService.getMyTickets(page,size,authentication.getName());
-        return ApiResponse.success(tickets);
+        PageResponse<TicketSummaryResponse> response = ticketService.getMyTickets(page,size,authentication.getName());
+        return ApiResponse.success(response);
     }
 
 
-//    @GetMapping("/{id}")
-//    public ApiResponse<TicketDetailResponse> getTicket(@PathVariable Long id){
-//
-//    }
+    @GetMapping("/{id}")
+    public ApiResponse<TicketDetailResponse> getTicket(
+            @PathVariable Long id,
+            Authentication authentication){
+        TicketDetailResponse response = ticketService.getTicketDetail(id,authentication.getName());
+        return ApiResponse.success(response);
+    }
 }

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -33,6 +34,7 @@ public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
     private final TicketConverter ticketConverter;
+
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
         User creator = userMapper.findByUsername(name);
@@ -95,6 +97,27 @@ public class TicketServiceImpl implements TicketService {
                 size
         );
     }
+
+    @Override
+    public TicketDetailResponse getTicketDetail(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        if(currentUser.getStatus() == 0){
+            throw new BusinessException(ErrorCode.INVALID_USER_STATUS);
+        }
+
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
+            throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
+        }
+        return ticketConverter.toDetailResponse(ticket);
+    }
+
 
     private String generateTicketNo(){
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);

@@ -11,4 +11,7 @@ public interface TicketMapper {
     int insert(Ticket ticket);
 
     List<Ticket> findByCreatorId(@Param("creatorId") Long creatorId);
+
+    Ticket findById(@Param("id") Long id);
+
 }
