@@ -56,7 +56,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<DepartmentResponse> getDepartmentList() {
         List<Department> departments = departmentMapper.findAll();
-
         return departmentConverter.toDepartmentResponseList(departments);
     }
 

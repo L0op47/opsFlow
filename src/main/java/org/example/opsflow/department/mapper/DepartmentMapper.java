@@ -20,7 +20,7 @@ public interface DepartmentMapper {
     @Select("SELECT id,name,code,status FROM sys_department ORDER BY id DESC ")
     List<Department> findAll();
 
-    @Update("UPDATE sys_department SET name = #{name},code = #{code},update_at = CURRENT_TIMESTAMP WHERE id = #{id}")
+    @Update("UPDATE sys_department SET name = #{name},code = #{code},updated_at = CURRENT_TIMESTAMP WHERE id = #{id}")
     int updateDepartment(Department department);
 
     @Select("SELECT id,name,code,status FROM sys_department WHERE id = #{id}")
