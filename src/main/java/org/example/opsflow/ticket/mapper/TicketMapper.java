@@ -14,4 +14,5 @@ public interface TicketMapper {
 
     Ticket findById(@Param("id") Long id);
 
+    List<Ticket> findPendingTickets();
 }

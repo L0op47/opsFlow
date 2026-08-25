@@ -30,7 +30,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class TicketServiceImpl implements TicketService {
+public class  TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
     private final TicketConverter ticketConverter;
@@ -116,6 +116,28 @@ public class TicketServiceImpl implements TicketService {
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
         }
         return ticketConverter.toDetailResponse(ticket);
+    }
+
+    @Override
+    public PageResponse<TicketSummaryResponse> getPendingTickets(int page, int size) {
+        if(page < 1){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
+
+        }
+        if(size < 1 || size > 100){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
+        }
+        PageHelper.startPage(page,size);
+        List<Ticket> tickets = ticketMapper.findPendingTickets();
+        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
+        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        return new PageResponse<>(
+                records,
+                pageInfo.getTotal(),
+                page,
+                size
+        );
+
     }
 
 

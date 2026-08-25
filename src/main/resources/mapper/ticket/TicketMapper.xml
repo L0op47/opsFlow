@@ -51,5 +51,14 @@
         WHERE id = #{id}
     </select>
 
+    <select id="findPendingTickets"
+            resultType="org.example.opsflow.ticket.entity.Ticket">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_ticket
+        WHERE status = 'PENDING' AND assignee_id IS NULL
+        ORDER BY created_at DESC,id DESC
+    </select>
+
 
 </mapper>

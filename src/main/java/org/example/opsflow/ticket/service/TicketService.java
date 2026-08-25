@@ -12,4 +12,6 @@ public interface TicketService {
     PageResponse<TicketSummaryResponse> getMyTickets(int page, int size, String name);
 
     TicketDetailResponse getTicketDetail(Long id, String name);
+
+    PageResponse<TicketSummaryResponse> getPendingTickets(int page, int size);
 }

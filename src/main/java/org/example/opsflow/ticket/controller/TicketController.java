@@ -43,4 +43,14 @@ public class TicketController {
         TicketDetailResponse response = ticketService.getTicketDetail(id,authentication.getName());
         return ApiResponse.success(response);
     }
+
+    @GetMapping()
+    public ApiResponse<PageResponse<TicketSummaryResponse>> getPendingTickets(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        PageResponse<TicketSummaryResponse> response = ticketService.getPendingTickets(page,size);
+        return ApiResponse.success(response);
+    }
+
 }
