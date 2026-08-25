@@ -33,6 +33,11 @@
         #{createdAt,jdbcType=TIMESTAMP},
         #{updatedAt,jdbcType=TIMESTAMP})
     </insert>
+    <update id="acceptTicket">
+        UPDATE sys_ticket
+        SET assignee_id = #{assigneeId}, status = 'PROCESSING',accepted_at = LOCALTIMESTAMP
+        WHERE id = #{id} AND status = 'PENDING' AND assignee_id IS NULL
+    </update>
 
     <select id="findByCreatorId"
             resultType="org.example.opsflow.ticket.entity.Ticket">

@@ -37,12 +37,12 @@ public class  TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
-        User creator = userMapper.findByUsername(name);
-        if(creator == null){
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
-        if (creator.getStatus() == 0){
-            throw new BusinessException(ErrorCode.INVALID_USER_STATUS);
+        if(currentUser.getStatus() == 0){
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
         }
 
         String title = request.getTitle().trim();
@@ -61,11 +61,11 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setTitle(title);
         ticket.setPriority(priority);
         ticket.setStatus(TicketStatus.PENDING);
-        ticket.setDepartmentId(creator.getDepartmentId());
+        ticket.setDepartmentId(currentUser.getDepartmentId());
         LocalDateTime now = LocalDateTime.now().withNano(0);
         ticket.setCreatedAt(now);
         ticket.setUpdatedAt(now);
-        ticket.setCreatorId(creator.getId());
+        ticket.setCreatorId(currentUser.getId());
         int affectedRows = ticketMapper.insert(ticket);
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单创建失败");
@@ -82,12 +82,16 @@ public class  TicketServiceImpl implements TicketService {
         if(size < 1 || size > 100){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
-        User user = userMapper.findByUsername(name);
-        if(user == null){
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
+        if(currentUser.getStatus() == 0){
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+
         PageHelper.startPage(page,size);
-        List<Ticket> tickets = ticketMapper.findByCreatorId(user.getId());
+        List<Ticket> tickets = ticketMapper.findByCreatorId(currentUser.getId());
         PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
         List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
         return new PageResponse<>(
@@ -102,10 +106,10 @@ public class  TicketServiceImpl implements TicketService {
     public TicketDetailResponse getTicketDetail(Long id, String name) {
         User currentUser = userMapper.findByUsername(name);
         if(currentUser == null){
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
         if(currentUser.getStatus() == 0){
-            throw new BusinessException(ErrorCode.INVALID_USER_STATUS);
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
         }
 
         Ticket ticket = ticketMapper.findById(id);
@@ -138,6 +142,26 @@ public class  TicketServiceImpl implements TicketService {
                 size
         );
 
+    }
+
+    @Override
+    public void acceptTicket(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        int affectedRows = ticketMapper.acceptTicket(id,currentUser.getId());
+        if (affectedRows == 1) {
+            return;
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单已被接取或当前状态不允许接单");
     }
 
 

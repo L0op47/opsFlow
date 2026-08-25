@@ -53,4 +53,13 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @PostMapping("/{id}/accept")
+    public ApiResponse<Void> acceptTicket(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        ticketService.acceptTicket(id,authentication.getName());
+        return ApiResponse.success();
+    }
+
 }
