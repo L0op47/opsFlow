@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
+import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
@@ -31,14 +32,14 @@ public class UserServiceImpl implements UserService {
     public void updateUserStatus(Long id, Integer status) {
         User user = userMapper.findById(id);
         if(user == null){
-            throw new BusinessException(40006,"用户不存在");
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         if(Objects.equals(user.getStatus(),status)){
             return;
         }
         int affectedRows = userMapper.updateUserStatus(id,status);
         if(affectedRows != 1){
-            throw new BusinessException(50001,"用户状态修改失败");
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"用户状态更新失败");
         }
 
     }
@@ -47,34 +48,33 @@ public class UserServiceImpl implements UserService {
     public void assignDepartment(Long id, AssignDepartmentRequest request) {
         User user = userMapper.findById(id);
         if(user == null){
-            throw new BusinessException(40006,"用户不存在");
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         if(Objects.equals(user.getDepartmentId(),request.getDepartmentId())){
             return;
         }
         Department department = departmentMapper.findById(request.getDepartmentId());
         if(department == null){
-            throw new BusinessException(40008,"部门不存在");
+            throw new BusinessException(ErrorCode.DEPARTMENT_DISABLED);
         }
         if(department.getStatus() == 0){
-            throw new BusinessException(40009,"部门已经被禁用");
+            throw new BusinessException(ErrorCode.DEPARTMENT_DISABLED);
         }
         int affectedRows = userMapper.updateUserDepartment(id,request.getDepartmentId());
         if(affectedRows != 1){
-            throw new BusinessException(50001,"用户部门修改失败");
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"分配部门失败");
         }
     }
 
     @Override
     public PageResponse<UserResponse> getUserPage(int page, int size) {
         if(page < 1){
-            throw new BusinessException(40004,"页码必须大于等于1");
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
 
         }
         if(size < 1 || size > 100){
-            throw new BusinessException(40004,"每页的数量必须在1-100之间");
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
-
         PageHelper.startPage(page,size);
 
         List<User> users = userMapper.findAll();

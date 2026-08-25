@@ -1,14 +1,25 @@
 package org.example.opsflow.common.exception;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class BusinessException extends RuntimeException{
-    private final int code;
+    private final ErrorCode errorCode;
 
-    public BusinessException(int code, String message) {
+    public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getDefaultMessage());
+        this.errorCode = errorCode;
+    }
+
+    public BusinessException(ErrorCode errorCode, String message) {
         super(message);
-        this.code = code;
+        this.errorCode = errorCode;
+    }
+
+
+    public HttpStatus getHttpStatus(){
+        return errorCode.getHttpStatus();
     }
 
 }

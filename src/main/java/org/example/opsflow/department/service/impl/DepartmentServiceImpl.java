@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
+import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.converter.DepartmentConverter;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
@@ -44,10 +45,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         try{
             affectedRows = departmentMapper.inset(department);
             if(affectedRows != 1){
-                throw new BusinessException(50001,"部门创建失败");
+                throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"部门创建失败");
             }
         }catch (DuplicateKeyException e){
-            throw new BusinessException(40007,"部门代码已经存在");
+            throw new BusinessException(ErrorCode.DEPARTMENT_CODE_ALREADY_EXISTS);
         }
         return departmentConverter.toDepartmentResponse(department);
     }
@@ -73,11 +74,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         try{
             int affectedRows = departmentMapper.updateDepartment(department);
             if(affectedRows != 1){
-                throw new BusinessException(50002,"部门修改失败");
+                throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"部门修改失败");
             }
 
         }catch (DuplicateKeyException e){
-            throw new BusinessException(40007,"部门代码已经存在");
+            throw new BusinessException(ErrorCode.DEPARTMENT_CODE_ALREADY_EXISTS);
         }
 
         return departmentConverter.toDepartmentResponse(department);
@@ -86,11 +87,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public PageResponse<UserResponse> getDepartmentMembers(Long id, int page, int size) {
         if(page < 1){
-            throw new BusinessException(40004,"页码必须大于1");
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
 
         }
         if(size < 1 || size > 100){
-            throw new BusinessException(40004,"每页的数量必须在1-100之间");
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
         exitDepartment(id);
         PageHelper.startPage(page,size);
@@ -107,10 +108,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     }
 
+
     private Department exitDepartment(Long id){
         Department department = departmentMapper.findById(id);
         if(department == null){
-            throw new BusinessException(40008,"该部门不存在");
+            throw new BusinessException(ErrorCode.DEPARTMENT_NOT_FOUND);
         }
         return department;
     }
