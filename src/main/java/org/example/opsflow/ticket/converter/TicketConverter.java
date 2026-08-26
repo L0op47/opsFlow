@@ -2,8 +2,10 @@ package org.example.opsflow.ticket.converter;
 
 
 import org.example.opsflow.ticket.dto.TicketDetailResponse;
+import org.example.opsflow.ticket.dto.TicketHistoryResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.entity.Ticket;
+import org.example.opsflow.ticket.entity.TicketHistory;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -20,5 +22,5 @@ public interface TicketConverter {
 
     List<TicketSummaryResponse> toSummaryResponseList(List<Ticket> tickets);
 
-
+    List<TicketHistoryResponse> toHistoryResponseList(List<TicketHistory> TicketHistories);
 }

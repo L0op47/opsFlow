@@ -4,7 +4,10 @@ import jakarta.validation.Valid;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.ticket.dto.CreateTicketRequest;
 import org.example.opsflow.ticket.dto.TicketDetailResponse;
+import org.example.opsflow.ticket.dto.TicketHistoryResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
+
+import java.util.List;
 
 public interface TicketService {
     TicketDetailResponse createTicket(@Valid CreateTicketRequest request, String name);
@@ -24,4 +27,6 @@ public interface TicketService {
     void closeTicket(Long id, String name);
 
     void cancelTicket(Long id, String name);
+
+    List<TicketHistoryResponse> getTicketHistory(Long id,String name);
 }

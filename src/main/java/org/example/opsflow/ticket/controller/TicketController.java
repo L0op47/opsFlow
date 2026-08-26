@@ -6,10 +6,13 @@ import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.ticket.dto.CreateTicketRequest;
 import org.example.opsflow.ticket.dto.TicketDetailResponse;
+import org.example.opsflow.ticket.dto.TicketHistoryResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.service.TicketService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -97,5 +100,14 @@ public class TicketController {
     ){
         ticketService.cancelTicket(id,authentication.getName());
         return ApiResponse.success();
+    }
+
+    @GetMapping("/{id}/history")
+    public  ApiResponse<List<TicketHistoryResponse>> getTicketHistory(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        List<TicketHistoryResponse> responses = ticketService.getTicketHistory(id,authentication.getName());
+        return ApiResponse.success(responses);
     }
 }

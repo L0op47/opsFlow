@@ -9,6 +9,7 @@ import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.ticket.converter.TicketConverter;
 import org.example.opsflow.ticket.dto.CreateTicketRequest;
 import org.example.opsflow.ticket.dto.TicketDetailResponse;
+import org.example.opsflow.ticket.dto.TicketHistoryResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.entity.Ticket;
 import org.example.opsflow.ticket.entity.TicketHistory;
@@ -26,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -286,6 +284,26 @@ public class  TicketServiceImpl implements TicketService {
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单创建人");
         }
         throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "工单取消失败，请稍后重试");
+    }
+
+    @Override
+    public List<TicketHistoryResponse> getTicketHistory(Long id,String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
+            throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
+        }
+        List<TicketHistory> ticketHistories = ticketHistoryMapper.findByTicketId(id);
+        return ticketConverter.toHistoryResponseList(ticketHistories);
     }
 
 

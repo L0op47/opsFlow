@@ -22,7 +22,8 @@
         action,
         from_status,
         to_status,
-        remark,created_at
+        remark,
+        created_at
     </sql>
     <insert id="insert"
             parameterType="org.example.opsflow.ticket.entity.TicketHistory"
@@ -31,4 +32,11 @@
         INSERT INTO sys_ticket_history(ticket_id, operator_id, action, from_status, to_status, remark)
         values (#{ticketId}, #{operatorId}, #{action}, #{fromStatus}, #{toStatus}, #{remark})
     </insert>
+    <select id="findByTicketId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM sys_ticket_history
+        WHERE ticket_id = #{ticketId}
+        ORDER BY created_at ,id
+    </select>
 </mapper>
