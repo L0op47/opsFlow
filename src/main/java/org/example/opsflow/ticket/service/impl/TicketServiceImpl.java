@@ -11,13 +11,17 @@ import org.example.opsflow.ticket.dto.CreateTicketRequest;
 import org.example.opsflow.ticket.dto.TicketDetailResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.entity.Ticket;
+import org.example.opsflow.ticket.entity.TicketHistory;
+import org.example.opsflow.ticket.enums.TicketAction;
 import org.example.opsflow.ticket.enums.TicketPriority;
 import org.example.opsflow.ticket.enums.TicketStatus;
+import org.example.opsflow.ticket.mapper.TicketHistoryMapper;
 import org.example.opsflow.ticket.mapper.TicketMapper;
 import org.example.opsflow.ticket.service.TicketService;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +38,7 @@ public class  TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
     private final TicketConverter ticketConverter;
+    private final TicketHistoryMapper ticketHistoryMapper;
 
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
@@ -145,6 +150,7 @@ public class  TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @Transactional
     public void acceptTicket(Long id, String name) {
         User currentUser = userMapper.findByUsername(name);
         if(currentUser == null){
@@ -155,6 +161,17 @@ public class  TicketServiceImpl implements TicketService {
         }
         int affectedRows = ticketMapper.acceptTicket(id,currentUser.getId());
         if (affectedRows == 1) {
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.setTicketId(id);
+            ticketHistory.setOperatorId(currentUser.getId());
+            ticketHistory.setAction(TicketAction.ACCEPT);
+            ticketHistory.setFromStatus(TicketStatus.PENDING);
+            ticketHistory.setToStatus(TicketStatus.PROCESSING);
+            ticketHistory.setRemark(null);
+            int historyAffectedRows = ticketHistoryMapper.insert(ticketHistory);
+            if(historyAffectedRows != 1){
+                throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED);
+            }
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -215,6 +232,58 @@ public class  TicketServiceImpl implements TicketService {
         if(!Objects.equals(ticket.getAssigneeId(), currentUser.getId())){
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单处理人");
         }
+    }
+
+    @Override
+    public void closeTicket(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        int affectedRows = ticketMapper.closeTicket(id,currentUser.getId());
+        if (affectedRows == 1) {
+            return;
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        if(ticket.getStatus() != TicketStatus.RESOLVED){
+            throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单当前状态不允许关闭");
+        }
+        if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
+            throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单创建人");
+        }
+        throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "工单关闭失败，请稍后重试");
+    }
+
+    @Override
+    public void cancelTicket(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        int affectedRows = ticketMapper.cancelTicket(id,currentUser.getId());
+        if (affectedRows == 1) {
+            return;
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        if(ticket.getStatus() != TicketStatus.PENDING){
+            throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单当前状态不允许取消");
+        }
+        if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
+            throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单创建人");
+        }
+        throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "工单取消失败，请稍后重试");
     }
 
 

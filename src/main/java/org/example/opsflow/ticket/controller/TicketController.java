@@ -80,4 +80,22 @@ public class TicketController {
         ticketService.resolveTicket(id,authentication.getName());
         return ApiResponse.success();
     }
+
+    @PostMapping("/{id}/close")
+    public ApiResponse<Void> closeTicket(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        ticketService.closeTicket(id,authentication.getName());
+        return ApiResponse.success();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<Void> cancelTicket(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        ticketService.cancelTicket(id,authentication.getName());
+        return ApiResponse.success();
+    }
 }

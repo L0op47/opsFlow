@@ -20,4 +20,8 @@ public interface TicketService {
     PageResponse<TicketSummaryResponse> getMyProcessingTickets(String name, int page, int size);
 
     void resolveTicket(Long id, String name);
+
+    void closeTicket(Long id, String name);
+
+    void cancelTicket(Long id, String name);
 }

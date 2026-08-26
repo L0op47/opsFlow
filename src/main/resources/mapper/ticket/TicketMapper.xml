@@ -43,6 +43,16 @@
         SET resolved_at = LOCALTIMESTAMP, status = 'RESOLVED'
         WHERE id = #{id} AND status = 'PROCESSING' AND assignee_id = #{assigneeId}
     </update>
+    <update id="closeTicket">
+        UPDATE sys_ticket
+        SET closed_at = LOCALTIMESTAMP, status = 'CLOSED'
+        WHERE id = #{id} AND status = 'RESOLVED' AND creator_id = #{creatorId}
+    </update>
+    <update id="cancelTicket">
+        UPDATE sys_ticket
+        SET status = 'CANCELED'
+        WHERE id = #{id} AND status = 'PENDING' AND creator_id = #{creatorId}
+    </update>
 
     <select id="findByCreatorId"
             resultType="org.example.opsflow.ticket.entity.Ticket">
