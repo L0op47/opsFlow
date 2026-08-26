@@ -149,37 +149,6 @@ public class  TicketServiceImpl implements TicketService {
 
     }
 
-    @Override
-    @Transactional
-    public void acceptTicket(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
-        int affectedRows = ticketMapper.acceptTicket(id,currentUser.getId());
-        if (affectedRows == 1) {
-            TicketHistory ticketHistory = new TicketHistory();
-            ticketHistory.setTicketId(id);
-            ticketHistory.setOperatorId(currentUser.getId());
-            ticketHistory.setAction(TicketAction.ACCEPT);
-            ticketHistory.setFromStatus(TicketStatus.PENDING);
-            ticketHistory.setToStatus(TicketStatus.PROCESSING);
-            ticketHistory.setRemark(null);
-            int historyAffectedRows = ticketHistoryMapper.insert(ticketHistory);
-            if(historyAffectedRows != 1){
-                throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED);
-            }
-            return;
-        }
-        Ticket ticket = ticketMapper.findById(id);
-        if(ticket == null){
-            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
-        }
-        throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单已被接取或当前状态不允许接单");
-    }
 
     @Override
     public PageResponse<TicketSummaryResponse> getMyProcessingTickets(String name, int page, int size) {
@@ -210,6 +179,30 @@ public class  TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @Transactional
+    public void acceptTicket(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        int affectedRows = ticketMapper.acceptTicket(id,currentUser.getId());
+        if (affectedRows == 1) {
+            recordTicketHistory(id,currentUser.getId(),TicketAction.ACCEPT,
+                    TicketStatus.PENDING,TicketStatus.PROCESSING);
+            return;
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单已被接取或当前状态不允许接单");
+    }
+
+    @Override
+    @Transactional
     public void resolveTicket(Long id, String name) {
         User currentUser = userMapper.findByUsername(name);
         if(currentUser == null){
@@ -220,6 +213,8 @@ public class  TicketServiceImpl implements TicketService {
         }
         int affectedRows = ticketMapper.resolveTicket(id,currentUser.getId());
         if (affectedRows == 1) {
+            recordTicketHistory(id,currentUser.getId(),TicketAction.RESOLVE,
+                    TicketStatus.PROCESSING,TicketStatus.RESOLVED);
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -232,9 +227,11 @@ public class  TicketServiceImpl implements TicketService {
         if(!Objects.equals(ticket.getAssigneeId(), currentUser.getId())){
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单处理人");
         }
+        throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "工单解决失败，请稍后重试");
     }
 
     @Override
+    @Transactional
     public void closeTicket(Long id, String name) {
         User currentUser = userMapper.findByUsername(name);
         if(currentUser == null){
@@ -245,6 +242,8 @@ public class  TicketServiceImpl implements TicketService {
         }
         int affectedRows = ticketMapper.closeTicket(id,currentUser.getId());
         if (affectedRows == 1) {
+            recordTicketHistory(id,currentUser.getId(),TicketAction.CLOSE,
+                    TicketStatus.RESOLVED,TicketStatus.CLOSED);
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -261,6 +260,7 @@ public class  TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @Transactional
     public void cancelTicket(Long id, String name) {
         User currentUser = userMapper.findByUsername(name);
         if(currentUser == null){
@@ -271,6 +271,8 @@ public class  TicketServiceImpl implements TicketService {
         }
         int affectedRows = ticketMapper.cancelTicket(id,currentUser.getId());
         if (affectedRows == 1) {
+            recordTicketHistory(id,currentUser.getId(),TicketAction.CANCEL,
+                    TicketStatus.PENDING,TicketStatus.CANCELED);
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -296,5 +298,19 @@ public class  TicketServiceImpl implements TicketService {
                                 .substring(0,20)
                                 .toLowerCase();
         return "TK" + date + randomPart;
+    }
+
+    private void recordTicketHistory(Long id,Long userId,TicketAction action,TicketStatus fromStatus,TicketStatus toStatus){
+        TicketHistory ticketHistory = new TicketHistory();
+        ticketHistory.setTicketId(id);
+        ticketHistory.setOperatorId(userId);
+        ticketHistory.setAction(action);
+        ticketHistory.setFromStatus(fromStatus);
+        ticketHistory.setToStatus(toStatus);
+        ticketHistory.setRemark(null);
+        int historyAffectedRows = ticketHistoryMapper.insert(ticketHistory);
+        if(historyAffectedRows != 1){
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED);
+        }
     }
 }
