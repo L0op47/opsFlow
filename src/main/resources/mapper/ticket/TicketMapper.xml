@@ -38,6 +38,11 @@
         SET assignee_id = #{assigneeId}, status = 'PROCESSING',accepted_at = LOCALTIMESTAMP
         WHERE id = #{id} AND status = 'PENDING' AND assignee_id IS NULL
     </update>
+    <update id="resolveTicket">
+        UPDATE sys_ticket
+        SET resolved_at = LOCALTIMESTAMP, status = 'RESOLVED'
+        WHERE id = #{id} AND status = 'PROCESSING' AND assignee_id = #{assigneeId}
+    </update>
 
     <select id="findByCreatorId"
             resultType="org.example.opsflow.ticket.entity.Ticket">
@@ -63,6 +68,14 @@
         FROM sys_ticket
         WHERE status = 'PENDING' AND assignee_id IS NULL
         ORDER BY created_at DESC,id DESC
+    </select>
+    <select id="findProcessingByAssigneeId" resultType="org.example.opsflow.ticket.entity.Ticket">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_ticket
+        WHERE assignee_id = #{assigneeId}
+        AND status = 'PROCESSING'
+        ORDER BY accepted_at DESC,id DESC
     </select>
 
 

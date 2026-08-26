@@ -17,4 +17,8 @@ public interface TicketMapper {
     List<Ticket> findPendingTickets();
 
     int acceptTicket(@Param("id")Long id, @Param("assigneeId") Long assigneeId);
+
+    List<Ticket> findProcessingByAssigneeId(@Param("assigneeId") Long assigneeId);
+
+    int resolveTicket(@Param("id") Long id,@Param("assigneeId") Long id1);
 }

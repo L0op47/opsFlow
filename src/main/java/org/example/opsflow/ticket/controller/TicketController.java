@@ -1,7 +1,7 @@
 package org.example.opsflow.ticket.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.ticket.dto.CreateTicketRequest;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/tickets")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TicketController {
     private final TicketService ticketService;
 
@@ -62,4 +62,22 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @GetMapping("/assigned-to-me")
+    public  ApiResponse<PageResponse<TicketSummaryResponse>> getAssignedToMe(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        PageResponse<TicketSummaryResponse> response = ticketService.getMyProcessingTickets(authentication.getName(),page,size);
+        return ApiResponse.success(response);
+    }
+
+    @PostMapping("/{id}/resolve")
+    public ApiResponse<Void> resolveTicket(
+            @PathVariable Long id,
+            Authentication authentication
+    ){
+        ticketService.resolveTicket(id,authentication.getName());
+        return ApiResponse.success();
+    }
 }

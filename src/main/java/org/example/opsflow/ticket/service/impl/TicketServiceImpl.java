@@ -164,6 +164,59 @@ public class  TicketServiceImpl implements TicketService {
         throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单已被接取或当前状态不允许接单");
     }
 
+    @Override
+    public PageResponse<TicketSummaryResponse> getMyProcessingTickets(String name, int page, int size) {
+        if(page < 1){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
+
+        }
+        if(size < 1 || size > 100){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
+        }
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        PageHelper.startPage(page,size);
+        List<Ticket> tickets = ticketMapper.findProcessingByAssigneeId(currentUser.getId());
+        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
+        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        return new PageResponse<>(
+                records,
+                pageInfo.getTotal(),
+                page,
+                size
+        );
+    }
+
+    @Override
+    public void resolveTicket(Long id, String name) {
+        User currentUser = userMapper.findByUsername(name);
+        if(currentUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!Objects.equals(currentUser.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        int affectedRows = ticketMapper.resolveTicket(id,currentUser.getId());
+        if (affectedRows == 1) {
+            return;
+        }
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        if(ticket.getStatus() != TicketStatus.PROCESSING){
+            throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION,"工单当前状态不允许解决");
+        }
+        if(!Objects.equals(ticket.getAssigneeId(), currentUser.getId())){
+            throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED,"用户不是该工单处理人");
+        }
+    }
+
 
     private String generateTicketNo(){
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);

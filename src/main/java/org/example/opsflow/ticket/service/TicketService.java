@@ -16,4 +16,8 @@ public interface TicketService {
     PageResponse<TicketSummaryResponse> getPendingTickets(int page, int size);
 
     void acceptTicket(Long id, String name);
+
+    PageResponse<TicketSummaryResponse> getMyProcessingTickets(String name, int page, int size);
+
+    void resolveTicket(Long id, String name);
 }
