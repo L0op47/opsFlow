@@ -65,15 +65,13 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setPriority(priority);
         ticket.setStatus(TicketStatus.PENDING);
         ticket.setDepartmentId(currentUser.getDepartmentId());
-        LocalDateTime now = LocalDateTime.now().withNano(0);
-        ticket.setCreatedAt(now);
-        ticket.setUpdatedAt(now);
         ticket.setCreatorId(currentUser.getId());
         int affectedRows = ticketMapper.insert(ticket);
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单创建失败");
         }
-        return ticketConverter.toDetailResponse(ticket);
+        Ticket savedTicket = ticketMapper.findById(ticket.getId());
+        return ticketConverter.toDetailResponse(savedTicket);
     }
 
     @Override

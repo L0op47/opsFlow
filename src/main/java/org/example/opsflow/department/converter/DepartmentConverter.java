@@ -1,7 +1,7 @@
 package org.example.opsflow.department.converter;
 
 import org.example.opsflow.department.entiy.Department;
-import org.example.opsflow.department.response.DepartmentResponse;
+import org.example.opsflow.department.dto.DepartmentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

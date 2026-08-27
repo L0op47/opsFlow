@@ -25,13 +25,9 @@
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.ticket.entity.Ticket" useGeneratedKeys="true">
         insert into sys_ticket
         (ticket_no,title,description,category,priority,
-        status,creator_id,department_id,
-        created_at,
-        updated_at)
+        status,creator_id,department_id)
         values (#{ticketNo,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{category,jdbcType=VARCHAR},#{priority,jdbcType=VARCHAR},
-        #{status,jdbcType=VARCHAR},#{creatorId,jdbcType=BIGINT},#{departmentId,jdbcType=BIGINT},
-        #{createdAt,jdbcType=TIMESTAMP},
-        #{updatedAt,jdbcType=TIMESTAMP})
+        #{status,jdbcType=VARCHAR},#{creatorId,jdbcType=BIGINT},#{departmentId,jdbcType=BIGINT})
     </insert>
     <update id="acceptTicket">
         UPDATE sys_ticket

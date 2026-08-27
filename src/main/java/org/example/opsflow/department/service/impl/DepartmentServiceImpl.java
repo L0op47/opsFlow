@@ -11,7 +11,7 @@ import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
-import org.example.opsflow.department.response.DepartmentResponse;
+import org.example.opsflow.department.dto.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
 import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.UserResponse;
@@ -50,7 +50,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         }catch (DuplicateKeyException e){
             throw new BusinessException(ErrorCode.DEPARTMENT_CODE_ALREADY_EXISTS);
         }
-        return departmentConverter.toDepartmentResponse(department);
+        Department savedDepartment = departmentMapper.findById(department.getId());
+        return departmentConverter.toDepartmentResponse(savedDepartment);
     }
 
     @Override

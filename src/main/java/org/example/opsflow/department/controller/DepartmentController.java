@@ -6,7 +6,7 @@ import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
-import org.example.opsflow.department.response.DepartmentResponse;
+import org.example.opsflow.department.dto.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
 import org.example.opsflow.user.dto.UserResponse;
 import org.springframework.web.bind.annotation.*;

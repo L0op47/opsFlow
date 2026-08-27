@@ -108,6 +108,24 @@ public enum ErrorCode {
             HttpStatus.CONFLICT,
             "工单状态流转不合法"
     ),
+    // RBAC模块：60000～69999
+    ROLE_NOT_FOUND(
+            60001,
+            HttpStatus.NOT_FOUND,
+            "角色不存在"
+    ),
+
+    ROLE_CODE_ALREADY_EXISTS(
+            60002,
+            HttpStatus.CONFLICT,
+            "角色编码已存在"
+    ),
+
+    PERMISSION_NOT_FOUND(
+            60003,
+            HttpStatus.NOT_FOUND,
+            "权限不存在"
+    ),
 
     // 系统错误：90000～99999
     INTERNAL_SERVER_ERROR(
