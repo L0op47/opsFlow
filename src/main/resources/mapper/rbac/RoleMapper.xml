@@ -25,7 +25,7 @@
            #{code},#{name},#{description},#{status}
         )
     </insert>
-    <select id="findById" resultType="org.example.opsflow.rbac.entity.Role">
+    <select id="findById" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_role
