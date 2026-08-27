@@ -30,7 +30,7 @@
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO sys_ticket_history(ticket_id, operator_id, action, from_status, to_status, remark)
-        values (#{ticketId}, #{operatorId}, #{action}, #{fromStatus}, #{toStatus}, #{remark})
+        VALUES (#{ticketId}, #{operatorId}, #{action}, #{fromStatus}, #{toStatus}, #{remark})
     </insert>
     <select id="findByTicketId" resultMap="BaseResultMap">
         SELECT
