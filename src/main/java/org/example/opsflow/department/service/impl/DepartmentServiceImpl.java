@@ -80,8 +80,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         }catch (DuplicateKeyException e){
             throw new BusinessException(ErrorCode.DEPARTMENT_CODE_ALREADY_EXISTS);
         }
-
-        return departmentConverter.toDepartmentResponse(department);
+        Department savedDepartment = departmentMapper.findById(department.getId());
+        return departmentConverter.toDepartmentResponse(savedDepartment);
     }
 
     @Override

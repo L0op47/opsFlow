@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.opsflow.rabc.mapper.RoleMapper">
 
-    <resultMap id="BaseResultMap" type="org.example.opsflow.rabc.entity.Role">
+    <resultMap id="BaseResultMap" type="org.example.opsflow.rbac.entity.Role">
             <id property="id" column="id" />
             <result property="code" column="code" />
             <result property="name" column="name" />
@@ -25,7 +25,7 @@
            #{code},#{name},#{description},#{status}
         )
     </insert>
-    <select id="findById" resultType="org.example.opsflow.rabc.entity.Role">
+    <select id="findById" resultType="org.example.opsflow.rbac.entity.Role">
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_role

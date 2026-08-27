@@ -1,4 +1,4 @@
-package org.example.opsflow.rabc.mapper;
+package org.example.opsflow.rbac.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 

@@ -1,4 +1,4 @@
-package org.example.opsflow.rabc.dto;
+package org.example.opsflow.rbac.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

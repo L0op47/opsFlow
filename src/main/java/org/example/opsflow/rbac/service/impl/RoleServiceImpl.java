@@ -1,14 +1,14 @@
-package org.example.opsflow.rabc.service.impl;
+package org.example.opsflow.rbac.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
-import org.example.opsflow.rabc.converter.RoleConverter;
-import org.example.opsflow.rabc.dto.CreateRoleRequest;
-import org.example.opsflow.rabc.dto.RoleResponse;
-import org.example.opsflow.rabc.entity.Role;
-import org.example.opsflow.rabc.mapper.RoleMapper;
-import org.example.opsflow.rabc.service.RoleService;
+import org.example.opsflow.rbac.converter.RoleConverter;
+import org.example.opsflow.rbac.dto.CreateRoleRequest;
+import org.example.opsflow.rbac.dto.RoleResponse;
+import org.example.opsflow.rbac.entity.Role;
+import org.example.opsflow.rbac.mapper.RoleMapper;
+import org.example.opsflow.rbac.service.RoleService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 

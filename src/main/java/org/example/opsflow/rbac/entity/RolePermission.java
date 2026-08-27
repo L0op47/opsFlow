@@ -1,13 +1,14 @@
-package org.example.opsflow.rabc.entity;
+package org.example.opsflow.rbac.entity;
 
 import java.time.LocalDateTime;
 import lombok.Data;
 
+
 @Data
-public class UserRole {
+public class RolePermission {
     private Long id;
 
-    private Long userId;
+    private Long permissionId;
 
     private Long roleId;
 

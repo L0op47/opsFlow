@@ -1,7 +1,7 @@
-package org.example.opsflow.rabc.converter;
+package org.example.opsflow.rbac.converter;
 
-import org.example.opsflow.rabc.dto.RoleResponse;
-import org.example.opsflow.rabc.entity.Role;
+import org.example.opsflow.rbac.dto.RoleResponse;
+import org.example.opsflow.rbac.entity.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

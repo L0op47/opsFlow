@@ -1,11 +1,10 @@
-package org.example.opsflow.rabc.dto;
-
-import lombok.Data;
+package org.example.opsflow.rbac.entity;
 
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
-public class RoleResponse {
+public class Role {
     private Long id;
 
     private String code;

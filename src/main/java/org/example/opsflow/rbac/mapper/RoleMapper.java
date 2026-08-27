@@ -1,7 +1,7 @@
-package org.example.opsflow.rabc.mapper;
+package org.example.opsflow.rbac.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.example.opsflow.rabc.entity.Role;
+import org.example.opsflow.rbac.entity.Role;
 
 
 @Mapper
