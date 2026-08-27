@@ -36,7 +36,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentResponse createDepartment(CreateDepartmentRequest createDepartmentRequest) {
         String name =  createDepartmentRequest.getName().trim();
-        String code =  createDepartmentRequest.getCode().trim().toUpperCase();
+        String code =  createDepartmentRequest.getCode().trim().toUpperCase(Locale.ROOT);
         Department department = new Department();
         department.setCode(code);
         department.setName(name);

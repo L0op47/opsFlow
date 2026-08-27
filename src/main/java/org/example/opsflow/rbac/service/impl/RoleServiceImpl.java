@@ -12,14 +12,18 @@ import org.example.opsflow.rbac.service.RoleService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
     private final RoleMapper roleMapper;
     private final RoleConverter roleConverter;
+
+
     @Override
     public RoleResponse createRole(CreateRoleRequest request) {
-        String code =  request.getCode().trim().toUpperCase();
+        String code =  request.getCode().trim().toUpperCase(Locale.ROOT);
         String name =  request.getName().trim();
         Role role = new Role();
         role.setName(name);
