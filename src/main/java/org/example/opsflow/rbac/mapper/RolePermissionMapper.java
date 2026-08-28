@@ -9,7 +9,7 @@ import java.util.Set;
 @Mapper
 public interface RolePermissionMapper {
 
-    void deleteByUserId(Long roleId);
+    void deleteByRoleId(Long roleId);
 
     int batchInsert(
             @Param("roleId")Long roleId,

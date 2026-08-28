@@ -33,10 +33,10 @@ public class UserRoleServiceImpl implements UserRoleService {
         if(validRoleCont != roleIds.size()){
             throw new BusinessException(
                     ErrorCode.ROLE_NOT_FOUND,
-                    "存在不存在或已禁用的角色"
+                    "存在无效或已禁用的角色"
             );
         }
-        userRoleMapper.deleteByRoleId(userId);
+        userRoleMapper.deleteByUserId(userId);
         int affectedRows = userRoleMapper.batchInsert(userId,roleIds);
         if (affectedRows != roleIds.size()) {
             throw new BusinessException(

@@ -72,12 +72,12 @@ public class RoleServiceImpl implements RoleService {
                     "存在不存在或已禁用的权限"
             );
         }
-        rolePermissionMapper.deleteByUserId(roleId);
+        rolePermissionMapper.deleteByRoleId(roleId);
         int affectedRows = rolePermissionMapper.batchInsert(roleId,permissionIds);
         if (affectedRows != permissionIds.size()) {
             throw new BusinessException(
                     ErrorCode.DATABASE_OPERATION_FAILED,
-                    "用户权限配置失败"
+                    "角色权限配置失败"
             );
         }
     }

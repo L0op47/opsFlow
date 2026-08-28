@@ -14,7 +14,7 @@ public interface UserRoleMapper {
             @Param("roleIds") Set<Long> roleIds
     );
 
-    void deleteByRoleId(Long userId);
+    void deleteByUserId(Long userId);
 }
 
 
