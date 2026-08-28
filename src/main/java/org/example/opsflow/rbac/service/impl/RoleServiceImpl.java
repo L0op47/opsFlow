@@ -12,7 +12,6 @@ import org.example.opsflow.rbac.mapper.PermissionMapper;
 import org.example.opsflow.rbac.mapper.RoleMapper;
 import org.example.opsflow.rbac.mapper.RolePermissionMapper;
 import org.example.opsflow.rbac.service.RoleService;
-import org.example.opsflow.user.entity.User;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.RecursiveTask;
 
 @Service
 @RequiredArgsConstructor
@@ -61,14 +59,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public void assignPermission(Long roleId, AssignPermissionsRequest request) {
+    public void assignPermissions(Long roleId, AssignPermissionsRequest request) {
         Role role = roleMapper.findById(roleId);
         if(role == null){
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
         Set<Long> permissionIds = request.getPermissionIds();
-        int validRoleCont = permissionMapper.countEnabledByIds(permissionIds);
-        if(validRoleCont != permissionIds.size()){
+        int validPermissionCount = permissionMapper.countEnabledByIds(permissionIds);
+        if(validPermissionCount != permissionIds.size()){
             throw new BusinessException(
                     ErrorCode.PERMISSION_NOT_FOUND,
                     "存在不存在或已禁用的权限"
@@ -79,7 +77,7 @@ public class RoleServiceImpl implements RoleService {
         if (affectedRows != permissionIds.size()) {
             throw new BusinessException(
                     ErrorCode.DATABASE_OPERATION_FAILED,
-                    "用户角色配置失败"
+                    "用户权限配置失败"
             );
         }
     }

@@ -36,7 +36,7 @@ public class UserRoleServiceImpl implements UserRoleService {
                     "存在不存在或已禁用的角色"
             );
         }
-        userRoleMapper.deleteByUserId(userId);
+        userRoleMapper.deleteByRoleId(userId);
         int affectedRows = userRoleMapper.batchInsert(userId,roleIds);
         if (affectedRows != roleIds.size()) {
             throw new BusinessException(

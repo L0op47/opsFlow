@@ -1,8 +1,7 @@
 package org.example.opsflow.rbac.mapper;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.example.opsflow.rbac.entity.Role;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public interface RoleMapper {
 
     List<Role> findAll();
 
-    int countEnabledByIds(@NotEmpty(message = "角色ID列表不能为空") Set<Long> roleIds);
+    int countEnabledByIds(@Param("roleIds") Set<Long> roleIds);
 }
 
 

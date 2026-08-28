@@ -1,6 +1,7 @@
 package org.example.opsflow.rbac.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Set;
 
@@ -10,7 +11,10 @@ public interface RolePermissionMapper {
 
     void deleteByUserId(Long roleId);
 
-    int batchInsert(Long roleId, Set<Long> permissionIds);
+    int batchInsert(
+            @Param("roleId")Long roleId,
+            @Param("permissionIds") Set<Long> permissionIds
+    );
 }
 
 

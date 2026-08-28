@@ -12,5 +12,5 @@ public interface RoleService {
 
     List<RoleResponse> getRoleList();
 
-    void assignPermission(Long roleId, @Valid AssignPermissionsRequest request);
+    void assignPermissions(Long roleId, @Valid AssignPermissionsRequest request);
 }

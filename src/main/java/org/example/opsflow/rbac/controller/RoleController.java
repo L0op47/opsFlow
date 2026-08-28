@@ -7,7 +7,6 @@ import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
 import org.example.opsflow.rbac.dto.CreateRoleRequest;
 import org.example.opsflow.rbac.dto.RoleResponse;
 import org.example.opsflow.rbac.service.RoleService;
-import org.example.opsflow.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,11 +28,11 @@ public class RoleController {
     }
 
     @PutMapping("/{id}/permissions")
-    public ApiResponse<Void> assignPermission(
+    public ApiResponse<Void> assignPermissions(
             @PathVariable Long id,
             @Valid @RequestBody AssignPermissionsRequest request
             ){
-        roleService.assignPermission(id,request);
+        roleService.assignPermissions(id,request);
         return ApiResponse.success();
     }
 

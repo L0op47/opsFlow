@@ -9,9 +9,9 @@ import java.util.Set;
 
 @Data
 public class AssignPermissionsRequest {
-    @NotEmpty(message = "角色ID列表不能为空")
+    @NotEmpty(message = "权限ID列表不能为空")
     private Set<
-            @NotNull(message = "角色的ID不能为空")
-            @Positive(message = "角色ID必须大于0")
+            @NotNull(message = "权限的ID不能为空")
+            @Positive(message = "权限ID必须大于0")
                     Long> permissionIds;
 }
