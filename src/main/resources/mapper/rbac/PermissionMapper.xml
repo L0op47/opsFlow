@@ -18,4 +18,17 @@
         id,code,name,description,status,created_at,
         updated_at
     </sql>
+    <select id="countEnabledByIds" resultType="int">
+        SELECT COUNT(*)
+        FROM sys_permission
+        WHERE status = 1
+        AND id IN
+        <foreach collection="permissionIds"
+                 item="permissionId"
+                 open="("
+                 separator=","
+                 close=")">
+            #{permissionId}
+        </foreach>
+    </select>
 </mapper>

@@ -31,4 +31,24 @@
         FROM sys_role
         WHERE id = #{id}
     </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_role
+        ORDER BY id
+    </select>
+
+    <select id="countEnabledByIds" resultType="int">
+        SELECT COUNT(*)
+        FROM sys_role
+        WHERE status = 1
+        AND id IN
+        <foreach collection="roleIds"
+                 item="roleId"
+                 open="("
+                 separator=","
+                 close=")">
+            #{roleId}
+        </foreach>
+    </select>
 </mapper>

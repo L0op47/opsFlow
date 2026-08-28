@@ -4,21 +4,31 @@ import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.rbac.converter.RoleConverter;
+import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
 import org.example.opsflow.rbac.dto.CreateRoleRequest;
 import org.example.opsflow.rbac.dto.RoleResponse;
 import org.example.opsflow.rbac.entity.Role;
+import org.example.opsflow.rbac.mapper.PermissionMapper;
 import org.example.opsflow.rbac.mapper.RoleMapper;
+import org.example.opsflow.rbac.mapper.RolePermissionMapper;
 import org.example.opsflow.rbac.service.RoleService;
+import org.example.opsflow.user.entity.User;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.RecursiveTask;
 
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
     private final RoleMapper roleMapper;
     private final RoleConverter roleConverter;
+    private final PermissionMapper permissionMapper;
+    private final RolePermissionMapper rolePermissionMapper;
 
 
     @Override
@@ -41,5 +51,36 @@ public class RoleServiceImpl implements RoleService {
         }
         Role savedRole = roleMapper.findById(role.getId());
         return roleConverter.toRoleResponse(savedRole);
+    }
+
+    @Override
+    public List<RoleResponse> getRoleList() {
+        List<Role> roles = roleMapper.findAll();
+        return roleConverter.toListRoleResponse(roles);
+    }
+
+    @Override
+    @Transactional
+    public void assignPermission(Long roleId, AssignPermissionsRequest request) {
+        Role role = roleMapper.findById(roleId);
+        if(role == null){
+            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
+        }
+        Set<Long> permissionIds = request.getPermissionIds();
+        int validRoleCont = permissionMapper.countEnabledByIds(permissionIds);
+        if(validRoleCont != permissionIds.size()){
+            throw new BusinessException(
+                    ErrorCode.PERMISSION_NOT_FOUND,
+                    "存在不存在或已禁用的权限"
+            );
+        }
+        rolePermissionMapper.deleteByUserId(roleId);
+        int affectedRows = rolePermissionMapper.batchInsert(roleId,permissionIds);
+        if (affectedRows != permissionIds.size()) {
+            throw new BusinessException(
+                    ErrorCode.DATABASE_OPERATION_FAILED,
+                    "用户角色配置失败"
+            );
+        }
     }
 }

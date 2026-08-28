@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.rbac.dto.AssignRolesRequest;
+import org.example.opsflow.rbac.service.UserRoleService;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UpdateUserStatusRequest;
 import org.example.opsflow.user.dto.UserResponse;
@@ -15,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserRoleService userRoleService;
 
-    @GetMapping()
+    @GetMapping
     public ApiResponse<PageResponse<UserResponse>> getUserPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
@@ -39,6 +42,15 @@ public class UserController {
             @Valid @RequestBody AssignDepartmentRequest request
     ){
         userService.assignDepartment(id,request);
+        return ApiResponse.success();
+    }
+
+    @PutMapping("/{id}/roles")
+    public ApiResponse<Void> assignRolesToUser(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignRolesRequest request
+    ){
+        userRoleService.assignRolesToUser(id,request);
         return ApiResponse.success();
     }
 }

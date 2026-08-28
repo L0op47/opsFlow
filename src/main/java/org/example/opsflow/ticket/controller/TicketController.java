@@ -47,7 +47,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
-    @GetMapping()
+    @GetMapping
     public ApiResponse<PageResponse<TicketSummaryResponse>> getPendingTickets(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
