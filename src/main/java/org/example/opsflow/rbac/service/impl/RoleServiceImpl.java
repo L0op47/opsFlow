@@ -69,7 +69,7 @@ public class RoleServiceImpl implements RoleService {
         if(validPermissionCount != permissionIds.size()){
             throw new BusinessException(
                     ErrorCode.PERMISSION_NOT_FOUND,
-                    "存在不存在或已禁用的权限"
+                    "存在无效或已禁用的权限"
             );
         }
         rolePermissionMapper.deleteByRoleId(roleId);

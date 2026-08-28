@@ -29,8 +29,8 @@ public class UserRoleServiceImpl implements UserRoleService {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         Set<Long> roleIds = request.getRoleIds();
-        int validRoleCont = roleMapper.countEnabledByIds(roleIds);
-        if(validRoleCont != roleIds.size()){
+        int validRoleCount = roleMapper.countEnabledByIds(roleIds);
+        if(validRoleCount != roleIds.size()){
             throw new BusinessException(
                     ErrorCode.ROLE_NOT_FOUND,
                     "存在无效或已禁用的角色"
