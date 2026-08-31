@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class PermissionsResponse {
+public class PermissionResponse {
     private Long id;
 
     private String code;

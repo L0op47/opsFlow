@@ -8,7 +8,7 @@ import org.example.opsflow.auth.dto.LoginResponse;
 import org.example.opsflow.auth.dto.RegisterRequest;
 import org.example.opsflow.auth.service.AuthService;
 import org.example.opsflow.common.response.ApiResponse;
-import org.example.opsflow.rbac.dto.PermissionsResponse;
+import org.example.opsflow.rbac.dto.PermissionResponse;
 import org.example.opsflow.rbac.dto.RoleResponse;
 import org.example.opsflow.rbac.service.RolePermissionService;
 import org.example.opsflow.rbac.service.UserRoleService;
@@ -51,8 +51,8 @@ public class AuthController {
     }
 
     @GetMapping("/me/permissions")
-    public ApiResponse<List<PermissionsResponse>> getCurrenRolePermissions(Authentication authentication){
-        return ApiResponse.success(rolePermissionService.getCurrentRolePermissions(authentication.getName()));
+    public ApiResponse<List<PermissionResponse>> getCurrentUserPermissions(Authentication authentication){
+        return ApiResponse.success(rolePermissionService.getCurrentUserPermissions(authentication.getName()));
 
     }
 }

@@ -3,11 +3,9 @@ package org.example.opsflow.rbac.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
+import org.example.opsflow.rbac.converter.PermissionConverter;
 import org.example.opsflow.rbac.converter.RoleConverter;
-import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
-import org.example.opsflow.rbac.dto.CreateRoleRequest;
-import org.example.opsflow.rbac.dto.RoleDetailResponse;
-import org.example.opsflow.rbac.dto.RoleResponse;
+import org.example.opsflow.rbac.dto.*;
 import org.example.opsflow.rbac.entity.Permission;
 import org.example.opsflow.rbac.entity.Role;
 import org.example.opsflow.rbac.mapper.PermissionMapper;
@@ -30,6 +28,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleConverter roleConverter;
     private final PermissionMapper permissionMapper;
     private final RolePermissionMapper rolePermissionMapper;
+    private final PermissionConverter permissionConverter;
 
 
     @Override
@@ -96,7 +95,7 @@ public class RoleServiceImpl implements RoleService {
         }
         List<Permission> permissions = permissionMapper.findEnabledByRoleId(id);
         RoleDetailResponse response = roleConverter.toRoleDetailResponse(role);
-        response.setPermissions(permissions);
+        response.setPermissions(permissionConverter.toListPermissionResponses(permissions));
         return response;
     }
 }

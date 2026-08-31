@@ -13,9 +13,9 @@ public interface PermissionMapper {
 
     int countEnabledByIds(@Param("permissionIds") Set<Long> permissionIds);
 
-    List<Permission> findEnabledByUserId(Long userId);
+    List<Permission> findEnabledByUserId(@Param("userId")Long userId);
 
-    List<Permission> findEnabledByRoleId(Long id);
+    List<Permission> findEnabledByRoleId(@Param("roleId")Long roleId);
 }
 
 

@@ -50,7 +50,7 @@
         FROM sys_permission p
         JOIN sys_role_permission rp
             ON p.id = rp.permission_id
-        WHERE rp.role_id = #{id}
+        WHERE rp.role_id = #{roleId}
             AND p.status = 1
         ORDER BY p.id
     </select>

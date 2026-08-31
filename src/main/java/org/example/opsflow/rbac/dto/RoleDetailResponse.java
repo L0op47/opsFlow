@@ -1,7 +1,6 @@
 package org.example.opsflow.rbac.dto;
 
 import lombok.Data;
-import org.example.opsflow.rbac.entity.Permission;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,5 +21,5 @@ public class RoleDetailResponse {
 
     private LocalDateTime updatedAt;
 
-    private List<Permission> permissions;
+    private List<PermissionResponse> permissions;
 }

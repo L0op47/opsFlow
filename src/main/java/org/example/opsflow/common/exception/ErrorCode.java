@@ -136,7 +136,7 @@ public enum ErrorCode {
     PERMISSION_CODE_ALREADY_EXISTS(
             60005,
             HttpStatus.CONFLICT,
-            "角色编码已存在"
+            "权限编码已存在"
     ),
 
     PERMISSION_DISABLED(
