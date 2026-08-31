@@ -3,7 +3,10 @@ package org.example.opsflow.rbac.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
+import org.example.opsflow.rbac.converter.RoleConverter;
 import org.example.opsflow.rbac.dto.AssignRolesRequest;
+import org.example.opsflow.rbac.dto.RoleResponse;
+import org.example.opsflow.rbac.entity.Role;
 import org.example.opsflow.rbac.mapper.RoleMapper;
 import org.example.opsflow.rbac.mapper.UserRoleMapper;
 import org.example.opsflow.rbac.service.UserRoleService;
@@ -12,6 +15,8 @@ import org.example.opsflow.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -20,6 +25,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
+    private final RoleConverter roleConverter;
 
     @Override
     @Transactional
@@ -44,5 +50,18 @@ public class UserRoleServiceImpl implements UserRoleService {
                     "用户角色配置失败"
             );
         }
+    }
+
+    @Override
+    public List<RoleResponse> getCurrentUserRoles(String name) {
+        User user = userMapper.findByUsername(name);
+        if(user == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if(!Objects.equals(user.getStatus(),1)){
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+        List<Role> roles = userRoleMapper.findEnabledByUserId(user.getId());
+        return roleConverter.toListRoleResponse(roles);
     }
 }

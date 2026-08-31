@@ -6,7 +6,9 @@ import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.rbac.converter.RoleConverter;
 import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
 import org.example.opsflow.rbac.dto.CreateRoleRequest;
+import org.example.opsflow.rbac.dto.RoleDetailResponse;
 import org.example.opsflow.rbac.dto.RoleResponse;
+import org.example.opsflow.rbac.entity.Permission;
 import org.example.opsflow.rbac.entity.Role;
 import org.example.opsflow.rbac.mapper.PermissionMapper;
 import org.example.opsflow.rbac.mapper.RoleMapper;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -80,5 +83,20 @@ public class RoleServiceImpl implements RoleService {
                     "角色权限配置失败"
             );
         }
+    }
+
+    @Override
+    public RoleDetailResponse getRoleDetail(Long id) {
+        Role role =  roleMapper.findById(id);
+        if(role == null){
+            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
+        }
+        if (!Objects.equals(role.getStatus(),1)){
+            throw new BusinessException(ErrorCode.ROLE_DISABLED);
+        }
+        List<Permission> permissions = permissionMapper.findEnabledByRoleId(id);
+        RoleDetailResponse response = roleConverter.toRoleDetailResponse(role);
+        response.setPermissions(permissions);
+        return response;
     }
 }

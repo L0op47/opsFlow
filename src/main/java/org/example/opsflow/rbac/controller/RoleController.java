@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
 import org.example.opsflow.rbac.dto.CreateRoleRequest;
+import org.example.opsflow.rbac.dto.RoleDetailResponse;
 import org.example.opsflow.rbac.dto.RoleResponse;
 import org.example.opsflow.rbac.service.RoleService;
 import org.springframework.web.bind.annotation.*;
@@ -36,4 +37,8 @@ public class RoleController {
         return ApiResponse.success();
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<RoleDetailResponse> getRoleDetail(@PathVariable Long id){
+        return ApiResponse.success(roleService.getRoleDetail(id));
+    }
 }

@@ -121,10 +121,28 @@ public enum ErrorCode {
             "角色编码已存在"
     ),
 
-    PERMISSION_NOT_FOUND(
+    ROLE_DISABLED(
             60003,
+            HttpStatus.CONFLICT,
+            "角色已被禁用"
+    ),
+
+    PERMISSION_NOT_FOUND(
+            60004,
             HttpStatus.NOT_FOUND,
             "权限不存在"
+    ),
+
+    PERMISSION_CODE_ALREADY_EXISTS(
+            60005,
+            HttpStatus.CONFLICT,
+            "角色编码已存在"
+    ),
+
+    PERMISSION_DISABLED(
+            60006,
+            HttpStatus.CONFLICT,
+            "权限已被禁用"
     ),
 
     // 系统错误：90000～99999

@@ -2,7 +2,9 @@ package org.example.opsflow.rbac.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.example.opsflow.rbac.entity.Role;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -15,6 +17,8 @@ public interface UserRoleMapper {
     );
 
     void deleteByUserId(Long userId);
+
+    List<Role> findEnabledByUserId(Long userId);
 }
 
 

@@ -28,4 +28,5 @@
         DELETE FROM sys_role_permission
         WHERE role_id = #{roleId}
     </delete>
+
 </mapper>
