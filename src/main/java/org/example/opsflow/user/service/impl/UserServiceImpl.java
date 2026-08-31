@@ -67,6 +67,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getActiveUser(String username) {
+        User user = userMapper.findByUsername(username);
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (!Objects.equals(user.getStatus(), 1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
+
+        return user;
+    }
+
+    @Override
     public PageResponse<UserResponse> getUserPage(int page, int size) {
         if(page < 1){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");

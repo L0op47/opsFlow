@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.opsflow.common.exception.BusinessException;
 import org.springframework.lang.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.rbac.dto.PermissionResponse;
@@ -56,9 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             securityContext.setAuthentication(authentication);
             SecurityContextHolder.setContext(securityContext);
-        }catch (JwtException | IllegalArgumentException e){
+        }catch (JwtException | IllegalArgumentException | BusinessException e){
             SecurityContextHolder.clearContext();
-            BadCredentialsException authenticationException = new BadCredentialsException("无效的JWT",e);
+            BadCredentialsException authenticationException = new BadCredentialsException("认证失败",e);
             authenticationEntryPoint.commence(request,response,authenticationException);
             return;
         }

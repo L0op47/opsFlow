@@ -20,12 +20,11 @@ import org.example.opsflow.ticket.mapper.TicketHistoryMapper;
 import org.example.opsflow.ticket.mapper.TicketMapper;
 import org.example.opsflow.ticket.service.TicketService;
 import org.example.opsflow.user.entity.User;
-import org.example.opsflow.user.mapper.UserMapper;
+import org.example.opsflow.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -34,19 +33,13 @@ import java.util.*;
 @RequiredArgsConstructor
 public class  TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
-    private final UserMapper userMapper;
+    private final UserService userService;
     private final TicketConverter ticketConverter;
     private final TicketHistoryMapper ticketHistoryMapper;
 
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if(currentUser.getStatus() == 0){
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
 
         String title = request.getTitle().trim();
         String description = request.getDescription().trim();
@@ -83,13 +76,7 @@ public class  TicketServiceImpl implements TicketService {
         if(size < 1 || size > 100){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if(currentUser.getStatus() == 0){
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
 
         PageHelper.startPage(page,size);
         List<Ticket> tickets = ticketMapper.findByCreatorId(currentUser.getId());
@@ -105,14 +92,7 @@ public class  TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDetailResponse getTicketDetail(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if(currentUser.getStatus() == 0){
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
-
+        User currentUser = userService.getActiveUser(name);
         Ticket ticket = ticketMapper.findById(id);
         if(ticket == null){
             throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
@@ -155,13 +135,7 @@ public class  TicketServiceImpl implements TicketService {
         if(size < 1 || size > 100){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         PageHelper.startPage(page,size);
         List<Ticket> tickets = ticketMapper.findProcessingByAssigneeId(currentUser.getId());
         PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
@@ -177,13 +151,7 @@ public class  TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void acceptTicket(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         int affectedRows = ticketMapper.acceptTicket(id,currentUser.getId());
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.ACCEPT,
@@ -200,13 +168,7 @@ public class  TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void resolveTicket(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         int affectedRows = ticketMapper.resolveTicket(id,currentUser.getId());
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.RESOLVE,
@@ -229,13 +191,7 @@ public class  TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void closeTicket(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         int affectedRows = ticketMapper.closeTicket(id,currentUser.getId());
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.CLOSE,
@@ -258,13 +214,7 @@ public class  TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void cancelTicket(Long id, String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         int affectedRows = ticketMapper.cancelTicket(id,currentUser.getId());
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.CANCEL,
@@ -286,13 +236,7 @@ public class  TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketHistoryResponse> getTicketHistory(Long id,String name) {
-        User currentUser = userMapper.findByUsername(name);
-        if(currentUser == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!Objects.equals(currentUser.getStatus(), 1)) {
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User currentUser = userService.getActiveUser(name);
         Ticket ticket = ticketMapper.findById(id);
         if(ticket == null){
             throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);

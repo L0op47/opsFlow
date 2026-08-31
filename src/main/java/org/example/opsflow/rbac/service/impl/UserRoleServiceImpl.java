@@ -12,17 +12,18 @@ import org.example.opsflow.rbac.mapper.UserRoleMapper;
 import org.example.opsflow.rbac.service.UserRoleService;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
+import org.example.opsflow.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
     private final UserMapper userMapper;
+    private final UserService userService;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
     private final RoleConverter roleConverter;
@@ -54,13 +55,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public List<RoleResponse> getCurrentUserRoles(String name) {
-        User user = userMapper.findByUsername(name);
-        if(user == null){
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        if(!Objects.equals(user.getStatus(),1)){
-            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
-        }
+        User user = userService.getActiveUser(name);
         List<Role> roles = userRoleMapper.findEnabledByUserId(user.getId());
         return roleConverter.toListRoleResponse(roles);
     }
