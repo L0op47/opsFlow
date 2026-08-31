@@ -10,9 +10,11 @@ import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UpdateUserStatusRequest;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@PreAuthorize("hasAuthority('user:manage')")
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {

@@ -9,6 +9,7 @@ import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.dto.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
 import org.example.opsflow.user.dto.UserResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.List;
 @RequestMapping("/api/v1/departments")
 public class DepartmentController {
     private final DepartmentService departmentService;
+
+    @PreAuthorize("hasAuthority('department:manage')")
     @PostMapping
     public ApiResponse<DepartmentResponse> createDepartment(
            @Valid @RequestBody CreateDepartmentRequest createDepartmentRequest
@@ -32,6 +35,7 @@ public class DepartmentController {
         return ApiResponse.success(departments);
     }
 
+    @PreAuthorize("hasAuthority('department:manage')")
     @PutMapping("/{id}")
     public ApiResponse<DepartmentResponse> updateDepartment(@PathVariable Long id,
                                                             @Valid @RequestBody UpdateDepartmentRequest request){
@@ -40,6 +44,7 @@ public class DepartmentController {
 
     }
 
+    @PreAuthorize("hasAuthority('department:manage')")
     @GetMapping("/{id}/members")
     public ApiResponse<PageResponse<UserResponse>> getDepartmentMembers(
             @PathVariable Long id,

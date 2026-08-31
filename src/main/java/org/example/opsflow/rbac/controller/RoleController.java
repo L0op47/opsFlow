@@ -8,11 +8,13 @@ import org.example.opsflow.rbac.dto.CreateRoleRequest;
 import org.example.opsflow.rbac.dto.RoleDetailResponse;
 import org.example.opsflow.rbac.dto.RoleResponse;
 import org.example.opsflow.rbac.service.RoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasAuthority('role:manage')")
 @RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
 public class RoleController {

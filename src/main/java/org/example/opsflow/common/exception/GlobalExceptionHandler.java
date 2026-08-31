@@ -3,6 +3,7 @@ package org.example.opsflow.common.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.example.opsflow.common.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
+                .body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException() {
+        ApiResponse<Void> body =
+                ApiResponse.error(ErrorCode.FORBIDDEN);
+
+        return ResponseEntity
+                .status(ErrorCode.FORBIDDEN.getHttpStatus())
                 .body(body);
     }
 }

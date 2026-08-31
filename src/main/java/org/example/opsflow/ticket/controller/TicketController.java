@@ -9,6 +9,7 @@ import org.example.opsflow.ticket.dto.TicketDetailResponse;
 import org.example.opsflow.ticket.dto.TicketHistoryResponse;
 import org.example.opsflow.ticket.dto.TicketSummaryResponse;
 import org.example.opsflow.ticket.service.TicketService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,8 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
 
+
+    @PreAuthorize("hasAuthority('ticket:create')")
     @PostMapping
     public ApiResponse<TicketDetailResponse> createTicket(
             @Valid @RequestBody CreateTicketRequest request,
@@ -29,6 +32,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @PreAuthorize("hasAuthority('ticket:read:self')")
     @GetMapping("/my")
     public ApiResponse<PageResponse<TicketSummaryResponse>> getMyTickets(
             Authentication authentication,
@@ -38,7 +42,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
-
+    @PreAuthorize("hasAuthority('ticket:read:self')")
     @GetMapping("/{id}")
     public ApiResponse<TicketDetailResponse> getTicket(
             @PathVariable Long id,
@@ -47,6 +51,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @PreAuthorize("hasAuthority('ticket:read:pending')")
     @GetMapping
     public ApiResponse<PageResponse<TicketSummaryResponse>> getPendingTickets(
             @RequestParam(defaultValue = "1") int page,
@@ -56,6 +61,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @PreAuthorize("hasAuthority('ticket:accept')")
     @PostMapping("/{id}/accept")
     public ApiResponse<Void> acceptTicket(
             @PathVariable Long id,
@@ -65,6 +71,7 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @PreAuthorize("hasAuthority('ticket:resolve')")
     @GetMapping("/assigned-to-me")
     public  ApiResponse<PageResponse<TicketSummaryResponse>> getAssignedToMe(
             Authentication authentication,
@@ -75,6 +82,7 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @PreAuthorize("hasAuthority('ticket:resolve')")
     @PostMapping("/{id}/resolve")
     public ApiResponse<Void> resolveTicket(
             @PathVariable Long id,
@@ -84,6 +92,7 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @PreAuthorize("hasAuthority('ticket:close')")
     @PostMapping("/{id}/close")
     public ApiResponse<Void> closeTicket(
             @PathVariable Long id,
@@ -93,6 +102,7 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @PreAuthorize("hasAuthority('ticket:cancel')")
     @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancelTicket(
             @PathVariable Long id,
@@ -102,6 +112,7 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @PreAuthorize("hasAuthority('ticket:read:self')")
     @GetMapping("/{id}/history")
     public  ApiResponse<List<TicketHistoryResponse>> getTicketHistory(
             @PathVariable Long id,
