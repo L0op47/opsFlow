@@ -15,7 +15,7 @@ public interface DepartmentMapper {
             keyColumn = "id",
             keyProperty = "id"
     )
-    int inset(Department department);
+    int insert(Department department);
 
     @Select("SELECT id,name,code,status,created_at,updated_at FROM sys_department ORDER BY id DESC ")
     List<Department> findAll();

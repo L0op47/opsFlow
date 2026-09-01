@@ -43,7 +43,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setStatus(1);
         int affectedRows;
         try{
-            affectedRows = departmentMapper.inset(department);
+            affectedRows = departmentMapper.insert(department);
             if(affectedRows != 1){
                 throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"部门创建失败");
             }

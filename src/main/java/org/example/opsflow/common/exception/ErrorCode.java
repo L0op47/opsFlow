@@ -145,6 +145,25 @@ public enum ErrorCode {
             "权限已被禁用"
     ),
 
+    // 资产模块：70000～79999
+    ASSET_NOT_FOUND(
+            70001,
+            HttpStatus.NOT_FOUND,
+            "资产不存在"
+    ),
+
+    ASSET_CODE_ALREADY_EXISTS(
+            70002,
+            HttpStatus.CONFLICT,
+            "资产编号已存在"
+    ),
+
+    ASSET_DISABLED(
+            70003,
+            HttpStatus.CONFLICT,
+            "资产已被禁用"
+    ),
+
     // 系统错误：90000～99999
     INTERNAL_SERVER_ERROR(
             90001,
