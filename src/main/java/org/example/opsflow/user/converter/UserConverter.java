@@ -1,8 +1,10 @@
 package org.example.opsflow.user.converter;
 
+import org.example.opsflow.user.dto.UserDetailResponse;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -15,4 +17,7 @@ public interface UserConverter {
     UserResponse toUserResponse(User user);
 
     List<UserResponse> toUserResponseList(List<User> users);
+
+    @Mapping(target = "roles", ignore = true)
+    UserDetailResponse toUserDetailResponse(User user);
 }

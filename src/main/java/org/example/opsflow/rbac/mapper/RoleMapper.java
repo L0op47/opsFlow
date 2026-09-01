@@ -18,8 +18,14 @@ public interface RoleMapper {
     List<Role> findAll();
 
     int countEnabledByIds(@Param("roleIds") Set<Long> roleIds);
-}
 
+    int updateBasicInfo(Role role);
+
+    int updateStatus(
+            @Param("id") Long id,
+            @Param("status") Integer status
+    );
+}
 
 
 

@@ -7,7 +7,9 @@ import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.rbac.dto.AssignRolesRequest;
 import org.example.opsflow.rbac.service.UserRoleService;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
+import org.example.opsflow.user.dto.UpdateUserRequest;
 import org.example.opsflow.user.dto.UpdateUserStatusRequest;
+import org.example.opsflow.user.dto.UserDetailResponse;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +22,21 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final UserRoleService userRoleService;
+
+    @GetMapping("/{id}")
+    public ApiResponse<UserDetailResponse> getUserDetail(@PathVariable Long id) {
+        UserDetailResponse response = userService.getUserDetail(id);
+        response.setRoles(userRoleService.getAssignedRolesByUserId(id));
+        return ApiResponse.success(response);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<UserResponse> updateBasicInfo(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request
+    ) {
+        return ApiResponse.success(userService.updateBasicInfo(id, request));
+    }
 
     @GetMapping
     public ApiResponse<PageResponse<UserResponse>> getUserPage(

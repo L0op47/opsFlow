@@ -16,8 +16,9 @@ public interface PermissionMapper {
     List<Permission> findEnabledByUserId(@Param("userId")Long userId);
 
     List<Permission> findEnabledByRoleId(@Param("roleId")Long roleId);
-}
 
+    List<Permission> findAllEnabled();
+}
 
 
 

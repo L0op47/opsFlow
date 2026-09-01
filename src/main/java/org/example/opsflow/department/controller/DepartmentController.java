@@ -5,8 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.dto.CreateDepartmentRequest;
-import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.dto.DepartmentResponse;
+import org.example.opsflow.department.dto.UpdateDepartmentRequest;
+import org.example.opsflow.department.dto.UpdateDepartmentStatusRequest;
 import org.example.opsflow.department.service.DepartmentService;
 import org.example.opsflow.user.dto.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,12 +37,28 @@ public class DepartmentController {
     }
 
     @PreAuthorize("hasAuthority('department:manage')")
+    @GetMapping("/{id}")
+    public ApiResponse<DepartmentResponse> getDepartmentDetail(@PathVariable Long id){
+        return ApiResponse.success(departmentService.getDepartmentDetail(id));
+    }
+
+    @PreAuthorize("hasAuthority('department:manage')")
     @PutMapping("/{id}")
     public ApiResponse<DepartmentResponse> updateDepartment(@PathVariable Long id,
                                                             @Valid @RequestBody UpdateDepartmentRequest request){
         DepartmentResponse departmentResponse = departmentService.updateDepartment(id,request);
         return ApiResponse.success(departmentResponse);
 
+    }
+
+    @PreAuthorize("hasAuthority('department:manage')")
+    @PatchMapping("/{id}/status")
+    public ApiResponse<Void> updateDepartmentStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDepartmentStatusRequest request
+    ){
+        departmentService.updateDepartmentStatus(id, request.getStatus());
+        return ApiResponse.success();
     }
 
     @PreAuthorize("hasAuthority('department:manage')")

@@ -29,8 +29,11 @@ public interface UserMapper {
     @Update("UPDATE sys_user SET status = #{status},updated_at = LOCALTIMESTAMP WHERE id = #{id}")
     int updateUserStatus(Long id, Integer status);
 
-    @Select("SELECT id,username,password,status,real_name,email,phone,department_id FROM sys_user WHERE id = #{id}")
+    @Select("SELECT id,username,password,status,real_name,email,phone,department_id,created_at,updated_at FROM sys_user WHERE id = #{id}")
     User findById(Long id);
+
+    @Update("UPDATE sys_user SET real_name = #{realName},email = #{email},phone = #{phone},updated_at = LOCALTIMESTAMP WHERE id = #{id}")
+    int updateBasicInfo(User user);
 
     @Update("UPDATE sys_user SET department_id = #{departmentId},updated_at = LOCALTIMESTAMP WHERE id = #{id}")
     int updateUserDepartment(Long id, Long departmentId);

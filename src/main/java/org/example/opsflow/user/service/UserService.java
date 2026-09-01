@@ -4,12 +4,18 @@ package org.example.opsflow.user.service;
 import jakarta.validation.Valid;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
+import org.example.opsflow.user.dto.UpdateUserRequest;
+import org.example.opsflow.user.dto.UserDetailResponse;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 
 
 public interface UserService {
     PageResponse<UserResponse> getUserPage(int page, int size);
+
+    UserDetailResponse getUserDetail(Long id);
+
+    UserResponse updateBasicInfo(Long id, @Valid UpdateUserRequest request);
 
     void updateUserStatus(Long id, Integer status);
 

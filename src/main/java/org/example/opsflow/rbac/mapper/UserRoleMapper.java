@@ -19,8 +19,9 @@ public interface UserRoleMapper {
     void deleteByUserId(@Param("userId")Long userId);
 
     List<Role> findEnabledByUserId(@Param("userId")Long userId);
-}
 
+    List<Role> findAssignedByUserId(@Param("userId") Long userId);
+}
 
 
 

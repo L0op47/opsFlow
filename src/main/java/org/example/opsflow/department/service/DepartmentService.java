@@ -13,7 +13,11 @@ public interface DepartmentService {
 
     List<DepartmentResponse> getDepartmentList();
 
+    DepartmentResponse getDepartmentDetail(Long id);
+
     DepartmentResponse updateDepartment(Long id, UpdateDepartmentRequest request);
+
+    void updateDepartmentStatus(Long id, Integer status);
 
     PageResponse<UserResponse> getDepartmentMembers(Long id, int page, int size);
 }
