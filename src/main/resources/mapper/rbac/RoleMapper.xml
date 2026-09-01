@@ -51,4 +51,17 @@
             #{roleId}
         </foreach>
     </select>
+
+    <update id="updateBasicInfo">
+        UPDATE sys_role
+        SET name = #{name},
+            description = #{description}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE sys_role
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
 </mapper>

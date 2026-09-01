@@ -25,4 +25,7 @@ public interface DepartmentMapper {
 
     @Select("SELECT id,name,code,status,created_at,updated_at FROM sys_department WHERE id = #{id}")
     Department findById(Long id);
+
+    @Update("UPDATE sys_department SET status = #{status} WHERE id = #{id}")
+    int updateDepartmentStatus(@Param("id") Long id, @Param("status") Integer status);
 }

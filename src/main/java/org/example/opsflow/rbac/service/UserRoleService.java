@@ -10,4 +10,6 @@ public interface UserRoleService {
     void assignRolesToUser(Long userId, @Valid AssignRolesRequest request);
 
     List<RoleResponse> getCurrentUserRoles(String name);
+
+    List<RoleResponse> getAssignedRolesByUserId(Long userId);
 }

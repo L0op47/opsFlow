@@ -54,4 +54,12 @@
             AND p.status = 1
         ORDER BY p.id
     </select>
+
+    <select id="findAllEnabled" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_permission
+        WHERE status = 1
+        ORDER BY id
+    </select>
 </mapper>

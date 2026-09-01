@@ -10,6 +10,8 @@ import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
 import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
+import org.example.opsflow.user.dto.UpdateUserRequest;
+import org.example.opsflow.user.dto.UserDetailResponse;
 import org.example.opsflow.user.dto.UserResponse;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
@@ -27,6 +29,46 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final DepartmentMapper departmentMapper;
     private final UserConverter userConverter;
+
+    @Override
+    public UserDetailResponse getUserDetail(Long id) {
+        User user = userMapper.findById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        return userConverter.toUserDetailResponse(user);
+    }
+
+    @Override
+    public UserResponse updateBasicInfo(Long id, UpdateUserRequest request) {
+        User user = userMapper.findById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        String realName = request.getRealName().trim();
+        String email = trimNullable(request.getEmail());
+        String phone = trimNullable(request.getPhone());
+        if (Objects.equals(user.getRealName(), realName)
+                && Objects.equals(user.getEmail(), email)
+                && Objects.equals(user.getPhone(), phone)) {
+            return userConverter.toUserResponse(user);
+        }
+
+        user.setRealName(realName);
+        user.setEmail(email);
+        user.setPhone(phone);
+        int affectedRows = userMapper.updateBasicInfo(user);
+        if (affectedRows != 1) {
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "用户基本资料更新失败");
+        }
+
+        User savedUser = userMapper.findById(id);
+        if (savedUser == null) {
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED, "用户基本资料更新后查询失败");
+        }
+        return userConverter.toUserResponse(savedUser);
+    }
 
     @Override
     public void updateUserStatus(Long id, Integer status) {
@@ -103,6 +145,10 @@ public class UserServiceImpl implements UserService {
                 pageInfo.getTotal(),
                 page,
                 size);
+    }
+
+    private String trimNullable(String value) {
+        return value == null ? null : value.trim();
     }
 
 }

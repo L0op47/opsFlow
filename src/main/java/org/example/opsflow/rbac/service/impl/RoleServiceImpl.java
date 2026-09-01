@@ -90,12 +90,60 @@ public class RoleServiceImpl implements RoleService {
         if(role == null){
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
-        if (!Objects.equals(role.getStatus(),1)){
-            throw new BusinessException(ErrorCode.ROLE_DISABLED);
-        }
         List<Permission> permissions = permissionMapper.findEnabledByRoleId(id);
         RoleDetailResponse response = roleConverter.toRoleDetailResponse(role);
         response.setPermissions(permissionConverter.toListPermissionResponses(permissions));
         return response;
+    }
+
+    @Override
+    public RoleResponse updateRole(Long id, UpdateRoleRequest request) {
+        Role role = roleMapper.findById(id);
+        if (role == null) {
+            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
+        }
+
+        String name = request.getName().trim();
+        String description = request.getDescription() == null
+                ? null
+                : request.getDescription().trim();
+        if (Objects.equals(role.getName(), name)
+                && Objects.equals(role.getDescription(), description)) {
+            return roleConverter.toRoleResponse(role);
+        }
+
+        role.setName(name);
+        role.setDescription(description);
+        int affectedRows = roleMapper.updateBasicInfo(role);
+        if (affectedRows != 1) {
+            throw new BusinessException(
+                    ErrorCode.DATABASE_OPERATION_FAILED,
+                    "角色修改失败"
+            );
+        }
+
+        Role savedRole = roleMapper.findById(id);
+        return roleConverter.toRoleResponse(savedRole);
+    }
+
+    @Override
+    public void updateRoleStatus(Long id, UpdateRoleStatusRequest request) {
+        Role role = roleMapper.findById(id);
+        if (role == null) {
+            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
+        }
+
+        Integer status = request.getStatus();
+        if (Objects.equals(role.getStatus(), status)) {
+            return;
+        }
+
+        int affectedRows = roleMapper.updateStatus(id, status);
+        if (affectedRows != 1) {
+            throw new BusinessException(
+                    ErrorCode.DATABASE_OPERATION_FAILED,
+                    "角色状态更新失败"
+            );
+        }
     }
 }

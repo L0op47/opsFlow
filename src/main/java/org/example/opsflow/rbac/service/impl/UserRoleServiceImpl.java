@@ -59,4 +59,10 @@ public class UserRoleServiceImpl implements UserRoleService {
         List<Role> roles = userRoleMapper.findEnabledByUserId(user.getId());
         return roleConverter.toListRoleResponse(roles);
     }
+
+    @Override
+    public List<RoleResponse> getAssignedRolesByUserId(Long userId) {
+        List<Role> roles = userRoleMapper.findAssignedByUserId(userId);
+        return roleConverter.toListRoleResponse(roles);
+    }
 }

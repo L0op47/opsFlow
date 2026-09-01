@@ -61,6 +61,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public DepartmentResponse getDepartmentDetail(Long id) {
+        Department department = exitDepartment(id);
+        return departmentConverter.toDepartmentResponse(department);
+    }
+
+    @Override
     public DepartmentResponse updateDepartment(Long id, UpdateDepartmentRequest request) {
 
         Department department = exitDepartment(id);
@@ -82,6 +88,18 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         Department savedDepartment = departmentMapper.findById(department.getId());
         return departmentConverter.toDepartmentResponse(savedDepartment);
+    }
+
+    @Override
+    public void updateDepartmentStatus(Long id, Integer status) {
+        Department department = exitDepartment(id);
+        if(Objects.equals(department.getStatus(), status)){
+            return;
+        }
+        int affectedRows = departmentMapper.updateDepartmentStatus(id, status);
+        if(affectedRows != 1){
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"部门状态更新失败");
+        }
     }
 
     @Override
