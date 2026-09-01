@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/assets")
-@PreAuthorize("hasAuthority('asset::manage')")
+@PreAuthorize("hasAuthority('asset:manage')")
 public class AssetController {
     private final AssetService assetService;
 

@@ -25,7 +25,8 @@
         select
         <include refid="Base_Column_List" />
         from sys_asset
-        where  id = #{id} 
+        where  id = #{id}
+        ORDER BY id DESC
     </select>
     <select id="findAll" resultType="org.example.opsflow.asset.entity.Asset">
         select
