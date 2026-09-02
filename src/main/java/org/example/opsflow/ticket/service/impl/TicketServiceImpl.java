@@ -252,10 +252,10 @@ public class  TicketServiceImpl implements TicketService {
         if(ticket == null){
             throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
         }
-        if (Objects.equals(ticket.getCreatorId(), user.getId())) {
+        if (!Objects.equals(ticket.getCreatorId(), user.getId())) {
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
         }
-        if(Objects.equals(ticket.getStatus(), TicketStatus.PENDING)){
+        if(!Objects.equals(ticket.getStatus(), TicketStatus.PENDING)){
             throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION);
         }
         String title = request.getTitle().trim();
@@ -264,7 +264,7 @@ public class  TicketServiceImpl implements TicketService {
                 .trim()
                 .toUpperCase(Locale.ROOT);
         TicketPriority priority = request.getPriority() == null
-                ? TicketPriority.MEDIUM
+                ? ticket.getPriority()
                 : request.getPriority();
         ticket.setTitle(title);
         ticket.setDescription(description);
