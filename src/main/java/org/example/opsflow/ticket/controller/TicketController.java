@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
-import org.example.opsflow.ticket.dto.CreateTicketRequest;
-import org.example.opsflow.ticket.dto.TicketDetailResponse;
-import org.example.opsflow.ticket.dto.TicketHistoryResponse;
-import org.example.opsflow.ticket.dto.TicketSummaryResponse;
+import org.example.opsflow.ticket.dto.*;
 import org.example.opsflow.ticket.service.TicketService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -120,5 +117,15 @@ public class TicketController {
     ){
         List<TicketHistoryResponse> responses = ticketService.getTicketHistory(id,authentication.getName());
         return ApiResponse.success(responses);
+    }
+
+    @PreAuthorize("hasAuthority('ticket:create')")
+    @PutMapping("/{id}")
+    public ApiResponse<TicketDetailResponse>  updateTicket(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTicketRequest request,
+            Authentication authentication
+    ){
+        return ApiResponse.success(ticketService.updateTicket(id,request,authentication.getName()));
     }
 }

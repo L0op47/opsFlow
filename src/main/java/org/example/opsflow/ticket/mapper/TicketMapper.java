@@ -25,4 +25,6 @@ public interface TicketMapper {
     int closeTicket(@Param("id") Long id,@Param("creatorId") Long creatorId);
 
     int cancelTicket(@Param("id") Long id,@Param("creatorId") Long creatorId);
+
+    int updatePendingTicket(Ticket ticket, @Param("creatorId") Long creatorId);
 }

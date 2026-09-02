@@ -7,10 +7,7 @@ import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.ticket.converter.TicketConverter;
-import org.example.opsflow.ticket.dto.CreateTicketRequest;
-import org.example.opsflow.ticket.dto.TicketDetailResponse;
-import org.example.opsflow.ticket.dto.TicketHistoryResponse;
-import org.example.opsflow.ticket.dto.TicketSummaryResponse;
+import org.example.opsflow.ticket.dto.*;
 import org.example.opsflow.ticket.entity.Ticket;
 import org.example.opsflow.ticket.entity.TicketHistory;
 import org.example.opsflow.ticket.enums.TicketAction;
@@ -246,6 +243,33 @@ public class  TicketServiceImpl implements TicketService {
         }
         List<TicketHistory> ticketHistories = ticketHistoryMapper.findByTicketId(id);
         return ticketConverter.toHistoryResponseList(ticketHistories);
+    }
+
+    @Override
+    public TicketDetailResponse updateTicket(Long id, UpdateTicketRequest request, String name) {
+        User user =  userService.getActiveUser(name);
+        Ticket ticket = ticketMapper.findById(id);
+        if(ticket == null){
+            throw new BusinessException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        String title = request.getTitle().trim();
+        String description = request.getDescription().trim();
+        String category = request.getCategory()
+                .trim()
+                .toUpperCase(Locale.ROOT);
+        TicketPriority priority = request.getPriority() == null
+                ? TicketPriority.MEDIUM
+                : request.getPriority();
+        ticket.setTitle(title);
+        ticket.setDescription(description);
+        ticket.setCategory(category);
+        ticket.setPriority(priority);
+        int affectedRows = ticketMapper.updatePendingTicket(ticket,user.getId());
+        if (affectedRows != 1){
+            throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单修改失败");
+        }
+        Ticket savedTicket = ticketMapper.findById(id);
+        return ticketConverter.toDetailResponse(savedTicket);
     }
 
 

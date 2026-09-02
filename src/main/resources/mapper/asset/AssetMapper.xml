@@ -98,17 +98,19 @@
         </set>
         where   id = #{id} 
     </update>
-    <update id="updateByPrimaryKey" parameterType="org.example.opsflow.asset.entity.Asset">
+    <update id="updateAsset" parameterType="org.example.opsflow.asset.entity.Asset">
         update sys_asset
         set 
             asset_no =  #{assetNo},
             name =  #{name},
             category =  #{category},
-            model =  #{model},
-            assigned_user_id =  #{assignedUserId},
-            status =  #{status},
-            created_at =  #{createdAt},
-            updated_at =  #{updatedAt}
-        where   id = #{id} 
+            model =  #{model}
+        where  id = #{id}
+    </update>
+    <update id="updateAssetStatus">
+        UPDATE sys_asset SET status = #{status} WHERE id = #{id}
+    </update>
+    <update id="updateAssetAssignee">
+        UPDATE sys_asset SET assigned_user_id = #{status} WHERE id = #{id}
     </update>
 </mapper>

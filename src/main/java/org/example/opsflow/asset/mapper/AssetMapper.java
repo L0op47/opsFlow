@@ -19,7 +19,11 @@ public interface AssetMapper {
 
     int updateByPrimaryKeySelective(Asset record);
 
-    int updateByPrimaryKey(Asset record);
+    int updateAsset(Asset record);
 
     List<Asset> findAll();
+
+    int updateAssetStatus(Long id, Integer status);
+
+    int updateAssetAssignee(Long id, Long assignedUserId);
 }

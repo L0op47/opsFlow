@@ -49,6 +49,11 @@
         SET status = 'CANCELED'
         WHERE id = #{id} AND status = 'PENDING' AND creator_id = #{creatorId}
     </update>
+    <update id="updatePendingTicket">
+        UPDATE sys_ticket
+        SET title = #{title},description = #{description},priority = #{priority},category = #{category}
+        WHERE id = #{id} AND creator_id = #{creatorId} AND status = 'PENDING'
+    </update>
 
     <select id="findByCreatorId"
             resultType="org.example.opsflow.ticket.entity.Ticket">
