@@ -18,6 +18,7 @@ import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
 import org.example.opsflow.user.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -73,6 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUserStatus(Long id, Integer status) {
         User user = userMapper.findById(id);
         if(user == null){
