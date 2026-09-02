@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.opsflow.asset.cache.AssetCacheService;
 import org.example.opsflow.asset.converter.AssetConverter;
 import org.example.opsflow.asset.dto.AssetResponse;
 import org.example.opsflow.asset.dto.CreateAssetRequest;
@@ -29,6 +30,7 @@ public class AssetServiceImpl implements AssetService {
     private final AssetMapper assetMapper;
     private final AssetConverter assetConverter;
     private final UserMapper userMapper;
+    private final AssetCacheService assetCacheService;
 
     @Override
     public AssetResponse createAsset(CreateAssetRequest request) {
@@ -50,16 +52,26 @@ public class AssetServiceImpl implements AssetService {
             throw new BusinessException(ErrorCode.ASSET_CODE_ALREADY_EXISTS);
         }
         Asset savedAsset = assetMapper.findById(asset.getId());
-        return assetConverter.toAssetResponse(savedAsset);
+        AssetResponse assetResponse = assetConverter.toAssetResponse(savedAsset);
+        assetCacheService.save(asset.getId(),assetResponse);
+        return assetResponse;
     }
 
     @Override
     public AssetResponse getAssetDetail(Long id) {
+        AssetResponse cachedResponse = assetCacheService.get(id);
+        if (cachedResponse != null) {
+            return cachedResponse;
+        }
+
         Asset asset = assetMapper.findById(id);
         if(asset == null){
             throw new BusinessException(ErrorCode.ASSET_NOT_FOUND);
         }
-        return assetConverter.toAssetResponse(asset);
+        AssetResponse response = assetConverter.toAssetResponse(asset);
+        assetCacheService.save(id,response);
+
+        return response;
     }
 
     @Override
@@ -104,6 +116,7 @@ public class AssetServiceImpl implements AssetService {
             if(affectedRows != 1){
                 throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"资产修改失败");
             }
+            assetCacheService.remove(id);
         }catch (DuplicateKeyException e){
             throw new BusinessException(ErrorCode.ASSET_CODE_ALREADY_EXISTS);
         }
@@ -121,6 +134,7 @@ public class AssetServiceImpl implements AssetService {
         if(affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"资产状态更新失败");
         }
+        assetCacheService.remove(id);
     }
 
     @Override
@@ -143,6 +157,7 @@ public class AssetServiceImpl implements AssetService {
         if(affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"资产分配失败");
         }
+        assetCacheService.remove(id);
     }
 
     private Asset exitAsset(Long id){
