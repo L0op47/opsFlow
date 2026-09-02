@@ -6,6 +6,7 @@ import org.example.opsflow.rbac.service.RolePermissionService;
 import org.example.opsflow.security.filter.JwtAuthenticationFilter;
 import org.example.opsflow.security.handler.JwtAuthenticationEntryPoint;
 import org.example.opsflow.security.jwt.JwtUtil;
+import org.example.opsflow.security.session.LoginSessionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,13 +24,15 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final RolePermissionService rolePermissionService;
+    private final LoginSessionService loginSessionService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
                 jwtUtil,
-                jwtAuthenticationEntryPoint
-                ,rolePermissionService);
+                jwtAuthenticationEntryPoint,
+                rolePermissionService,
+                loginSessionService);
         http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

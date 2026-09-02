@@ -12,6 +12,12 @@ spring:
   flyway:
     baseline-on-migrate: false
     baseline-version: 1
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 2s
 
 jwt:
   secret: opsflow-jwt-secret-key-for-development-2026

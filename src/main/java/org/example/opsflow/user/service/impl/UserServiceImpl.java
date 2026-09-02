@@ -8,6 +8,7 @@ import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
 import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
+import org.example.opsflow.security.session.LoginSessionService;
 import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
 import org.example.opsflow.user.dto.UpdateUserRequest;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final DepartmentMapper departmentMapper;
     private final UserConverter userConverter;
+    private final LoginSessionService loginSessionService;
 
     @Override
     public UserDetailResponse getUserDetail(Long id) {
@@ -82,6 +84,9 @@ public class UserServiceImpl implements UserService {
         int affectedRows = userMapper.updateUserStatus(id,status);
         if(affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"用户状态更新失败");
+        }
+        if(status == 0){
+            loginSessionService.remove(user.getUsername());
         }
 
     }

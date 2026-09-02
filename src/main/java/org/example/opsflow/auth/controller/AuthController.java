@@ -55,4 +55,10 @@ public class AuthController {
         return ApiResponse.success(rolePermissionService.getCurrentUserPermissions(authentication.getName()));
 
     }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(Authentication authentication){
+        authService.logout(authentication.getName());
+        return ApiResponse.success();
+    }
 }

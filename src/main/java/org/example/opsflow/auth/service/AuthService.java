@@ -12,4 +12,6 @@ public interface AuthService {
     LoginResponse login(@Valid LoginRequest loginRequest);
 
     CurrentUserResponse getCurrentUser(String username);
+
+    void logout(String name);
 }

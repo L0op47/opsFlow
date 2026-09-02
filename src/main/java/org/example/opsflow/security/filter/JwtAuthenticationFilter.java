@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.opsflow.common.exception.BusinessException;
+import org.example.opsflow.security.session.LoginSessionService;
 import org.springframework.lang.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.rbac.dto.PermissionResponse;
@@ -29,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final RolePermissionService rolePermissionService;
+    private final LoginSessionService loginSessionService;
 
     @Override
     protected void doFilterInternal(
@@ -47,6 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authToken = authHeader.substring(7);
             Claims claims = jwtUtil.parseToken(authToken);
             String username = claims.getSubject();
+            if(!loginSessionService.isValid(username,authToken)){
+                throw  new BadCredentialsException("登录状态已失效");
+            }
+
             List<SimpleGrantedAuthority> authorities = rolePermissionService
                     .getCurrentUserPermissions(username)
                     .stream()
@@ -57,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
             securityContext.setAuthentication(authentication);
             SecurityContextHolder.setContext(securityContext);
-        }catch (JwtException | IllegalArgumentException | BusinessException e){
+        }catch (JwtException | IllegalArgumentException | BusinessException | BadCredentialsException e){
             SecurityContextHolder.clearContext();
             BadCredentialsException authenticationException = new BadCredentialsException("认证失败",e);
             authenticationEntryPoint.commence(request,response,authenticationException);
