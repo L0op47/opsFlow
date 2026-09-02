@@ -1,6 +1,7 @@
 package org.example.opsflow.asset.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.example.opsflow.asset.entity.Asset;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface AssetMapper {
 
     List<Asset> findAll();
 
-    int updateAssetStatus(Long id, Integer status);
+    int updateAssetStatus(@Param("id") Long id, @Param("status") Integer status);
 
-    int updateAssetAssignee(Long id, Long assignedUserId);
+    int updateAssetAssignee(@Param("id") Long id,@Param("assignedUserId") Long assignedUserId);
 }

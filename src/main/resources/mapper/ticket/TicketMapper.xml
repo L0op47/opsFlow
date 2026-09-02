@@ -51,8 +51,8 @@
     </update>
     <update id="updatePendingTicket">
         UPDATE sys_ticket
-        SET title = #{title},description = #{description},priority = #{priority},category = #{category}
-        WHERE id = #{id} AND creator_id = #{creatorId} AND status = 'PENDING'
+        SET title = #{ticket.title},description = #{ticket.description},priority = #{ticket.priority},category = #{ticket.category}
+        WHERE id = #{ticket.id} AND creator_id = #{creatorId} AND status = 'PENDING'
     </update>
 
     <select id="findByCreatorId"

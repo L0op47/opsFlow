@@ -88,7 +88,11 @@ public class AssetServiceImpl implements AssetService {
         Asset asset = exitAsset(id);
         String name =  request.getName().trim();
         String assetNo =  request.getAssetNo().trim().toUpperCase(Locale.ROOT);
-        if(Objects.equals(asset.getName(),name) &&  Objects.equals(asset.getAssetNo(),assetNo)){
+        if(     Objects.equals(asset.getName(),name) &&
+                Objects.equals(asset.getAssetNo(),assetNo) &&
+                Objects.equals(asset.getModel(),request.getModel()) &&
+                Objects.equals(asset.getCategory(),request.getCategory())
+        ){
             return assetConverter.toAssetResponse(asset);
         }
         asset.setName(name);
@@ -122,12 +126,15 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public void updateAssetAssignee(Long id, Long assignedUserId) {
         Asset asset = exitAsset(id);
+        if(!Objects.equals(asset.getStatus(), 1)){
+            throw new BusinessException(ErrorCode.ASSET_DISABLED);
+        }
         User user = userMapper.findById(assignedUserId);
         if(user == null){
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         if(!Objects.equals(user.getStatus(),1)){
-            throw new BusinessException(ErrorCode.INVALID_USER_STATUS);
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
         }
         if(Objects.equals(asset.getAssignedUserId(), assignedUserId)){
             return;

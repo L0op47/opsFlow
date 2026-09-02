@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class UpdateAssetStatusRequest {
     @NotNull(message = "资产状态不能为空")
-    @Min(value = 0, message = "部门状态只能是0或者1")
-    @Max(value = 1, message = "部门状态只能是0或者1")
+    @Min(value = 0, message = "资产状态只能是0或者1")
+    @Max(value = 1, message = "资产状态只能是0或者1")
     private Integer status;
 }

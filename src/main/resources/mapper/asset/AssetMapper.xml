@@ -111,6 +111,6 @@
         UPDATE sys_asset SET status = #{status} WHERE id = #{id}
     </update>
     <update id="updateAssetAssignee">
-        UPDATE sys_asset SET assigned_user_id = #{status} WHERE id = #{id}
+        UPDATE sys_asset SET assigned_user_id = #{assignedUserId} WHERE id = #{id}
     </update>
 </mapper>
