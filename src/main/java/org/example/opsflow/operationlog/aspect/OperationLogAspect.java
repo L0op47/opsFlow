@@ -43,7 +43,7 @@ public class OperationLogAspect {
             return result;
         }catch (Throwable e){
             record.setSuccess(0);
-            record.setErrorMessage(e.getMessage());
+            record.setErrorMessage(truncateErrorMessage(e.getMessage()));
             throw e;
         }finally {
             record.setDurationMs(System.currentTimeMillis() - startTime);
@@ -67,7 +67,7 @@ public class OperationLogAspect {
             return null;
         }
         Object[] args = joinPoint.getArgs();
-        if(args == null || args.length < targetIdArg){
+        if(args == null || args.length <= targetIdArg){
             return null;
         }
         Object targetId = args[targetIdArg];
@@ -89,5 +89,14 @@ public class OperationLogAspect {
             );
         }
     }
+
+    private String truncateErrorMessage(String message) {
+        if (message == null || message.length() <= 500) {
+            return message;
+        }
+
+        return message.substring(0, 500);
+    }
+
 
 }

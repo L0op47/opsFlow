@@ -47,6 +47,12 @@ public class OperationLogServiceImpl implements OperationLogService {
         if(module == null || module.isEmpty()){
             module = null;
         }
+        if (success != null && success != 0 && success != 1) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_REQUEST_PARAMETER,
+                    "操作结果只能是0或者1"
+            );
+        }
         PageHelper.startPage(page,size);
 
         List<OperationLogRecord> logs = operationLogMapper.findAll(operatorName,module,success);
