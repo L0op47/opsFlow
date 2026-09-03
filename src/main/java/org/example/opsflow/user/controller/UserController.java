@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.operationlog.annotation.OperationLog;
 import org.example.opsflow.rbac.dto.AssignRolesRequest;
 import org.example.opsflow.rbac.service.UserRoleService;
 import org.example.opsflow.user.dto.AssignDepartmentRequest;
@@ -30,6 +31,11 @@ public class UserController {
         return ApiResponse.success(response);
     }
 
+    @OperationLog(
+            module = "USER",
+            action = "UPDATE",
+            targetIdArg = 0
+    )
     @PutMapping("/{id}")
     public ApiResponse<UserResponse> updateBasicInfo(
             @PathVariable Long id,
@@ -46,6 +52,11 @@ public class UserController {
         return ApiResponse.success(userService.getUserPage(page,size));
     }
 
+    @OperationLog(
+            module = "USER",
+            action = "UPDATE_STATUS",
+            targetIdArg = 0
+    )
     @PatchMapping("/{id}/status")
     public ApiResponse<Void> updateUserStatus(
             @PathVariable Long id,
@@ -55,6 +66,11 @@ public class UserController {
         return ApiResponse.success();
     }
 
+    @OperationLog(
+            module = "USER",
+            action = "UPDATE_DEPARTMENT",
+            targetIdArg = 0
+    )
     @PatchMapping("/{id}/department")
     public ApiResponse<Void> assignDepartment(
             @PathVariable Long id,
@@ -64,6 +80,11 @@ public class UserController {
         return ApiResponse.success();
     }
 
+    @OperationLog(
+            module = "USER",
+            action = "UPDATE_ROLES",
+            targetIdArg = 0
+    )
     @PutMapping("/{id}/roles")
     public ApiResponse<Void> assignRolesToUser(
             @PathVariable Long id,

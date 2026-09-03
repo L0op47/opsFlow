@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.operationlog.annotation.OperationLog;
 import org.example.opsflow.ticket.dto.*;
 import org.example.opsflow.ticket.service.TicketService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,10 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
 
-
+    @OperationLog(
+            module = "TICKET",
+            action = "CREATE"
+    )
     @PreAuthorize("hasAuthority('ticket:create')")
     @PostMapping
     public ApiResponse<TicketDetailResponse> createTicket(
@@ -58,6 +62,11 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @OperationLog(
+            module = "TICKET",
+            action = "ACCEPT",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('ticket:accept')")
     @PostMapping("/{id}/accept")
     public ApiResponse<Void> acceptTicket(
@@ -79,6 +88,11 @@ public class TicketController {
         return ApiResponse.success(response);
     }
 
+    @OperationLog(
+            module = "TICKET",
+            action = "RESOLVE",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('ticket:resolve')")
     @PostMapping("/{id}/resolve")
     public ApiResponse<Void> resolveTicket(
@@ -89,6 +103,11 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @OperationLog(
+            module = "TICKET",
+            action = "CLOSE",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('ticket:close')")
     @PostMapping("/{id}/close")
     public ApiResponse<Void> closeTicket(
@@ -99,6 +118,11 @@ public class TicketController {
         return ApiResponse.success();
     }
 
+    @OperationLog(
+            module = "TICKET",
+            action = "CANCEL",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('ticket:cancel')")
     @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancelTicket(
@@ -119,6 +143,11 @@ public class TicketController {
         return ApiResponse.success(responses);
     }
 
+    @OperationLog(
+            module = "TICKET",
+            action = "UPDATE",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('ticket:create')")
     @PutMapping("/{id}")
     public ApiResponse<TicketDetailResponse>  updateTicket(

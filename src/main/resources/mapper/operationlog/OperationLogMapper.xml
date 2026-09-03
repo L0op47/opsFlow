@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.opsflow.operationlog.mapper.OperationLogMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.opsflow.operationlog.entity.OperationLogRecord">
+            <id property="id" column="id" />
+            <result property="operatorUsername" column="operator_username" />
+            <result property="module" column="module" />
+            <result property="action" column="action" />
+            <result property="targetId" column="target_id" />
+            <result property="requestMethod" column="request_method" />
+            <result property="requestUri" column="request_uri" />
+            <result property="ipAddress" column="ip_address" />
+            <result property="success" column="success" />
+            <result property="errorMessage" column="error_message" />
+            <result property="durationMs" column="duration_ms" />
+            <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,operator_username,module,action,target_id,request_method,
+        request_uri,ip_address,success,error_message,duration_ms,
+        created_at
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from sys_operation_log
+        where  id = #{id} 
+    </select>
+    <select id="findAll" resultType="org.example.opsflow.operationlog.entity.OperationLogRecord">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM sys_operation_log
+        <where>
+            <if test="operatorUsername != null">
+             AND operatorUsername = #{operatorUsername}
+            </if>
+            <if test="module != null">
+             AND module = #{module}
+            </if>
+            <if test="success != null">
+             AND success = #{success}
+            </if>
+        </where>
+        ORDER BY created_at DESC ,id DESC
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_operation_log
+        where  id = #{id} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.operationlog.entity.OperationLogRecord" useGeneratedKeys="true">
+        insert into sys_operation_log
+        (operator_username,module,action,target_id,request_method,
+        request_uri,ip_address,success,error_message,duration_ms)
+        values (#{operatorUsername},#{module},#{action},#{targetId},#{requestMethod},
+        #{requestUri},#{ipAddress},#{success},#{errorMessage},#{durationMs})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.operationlog.entity.OperationLogRecord" useGeneratedKeys="true">
+        insert into sys_operation_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="operatorUsername != null">operator_username,</if>
+                <if test="module != null">module,</if>
+                <if test="action != null">action,</if>
+                <if test="targetId != null">target_id,</if>
+                <if test="requestMethod != null">request_method,</if>
+                <if test="requestUri != null">request_uri,</if>
+                <if test="ipAddress != null">ip_address,</if>
+                <if test="success != null">success,</if>
+                <if test="errorMessage != null">error_message,</if>
+                <if test="durationMs != null">duration_ms,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="operatorUsername != null">#{operatorUsername},</if>
+                <if test="module != null">#{module},</if>
+                <if test="action != null">#{action},</if>
+                <if test="targetId != null">#{targetId},</if>
+                <if test="requestMethod != null">#{requestMethod},</if>
+                <if test="requestUri != null">#{requestUri},</if>
+                <if test="ipAddress != null">#{ipAddress},</if>
+                <if test="success != null">#{success},</if>
+                <if test="errorMessage != null">#{errorMessage},</if>
+                <if test="durationMs != null">#{durationMs},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.example.opsflow.operationlog.entity.OperationLogRecord">
+        update sys_operation_log
+        <set>
+                <if test="operatorUsername != null">
+                    operator_username = #{operatorUsername},
+                </if>
+                <if test="module != null">
+                    module = #{module},
+                </if>
+                <if test="action != null">
+                    action = #{action},
+                </if>
+                <if test="targetId != null">
+                    target_id = #{targetId},
+                </if>
+                <if test="requestMethod != null">
+                    request_method = #{requestMethod},
+                </if>
+                <if test="requestUri != null">
+                    request_uri = #{requestUri},
+                </if>
+                <if test="ipAddress != null">
+                    ip_address = #{ipAddress},
+                </if>
+                <if test="success != null">
+                    success = #{success},
+                </if>
+                <if test="errorMessage != null">
+                    error_message = #{errorMessage},
+                </if>
+                <if test="durationMs != null">
+                    duration_ms = #{durationMs},
+                </if>
+                <if test="createdAt != null">
+                    created_at = #{createdAt},
+                </if>
+        </set>
+        where   id = #{id} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.example.opsflow.operationlog.entity.OperationLogRecord">
+        update sys_operation_log
+        set 
+            operator_username =  #{operatorUsername},
+            module =  #{module},
+            action =  #{action},
+            target_id =  #{targetId},
+            request_method =  #{requestMethod},
+            request_uri =  #{requestUri},
+            ip_address =  #{ipAddress},
+            success =  #{success},
+            error_message =  #{errorMessage},
+            duration_ms =  #{durationMs},
+            created_at =  #{createdAt}
+        where   id = #{id} 
+    </update>
+</mapper>

@@ -6,6 +6,7 @@ import org.example.opsflow.asset.dto.*;
 import org.example.opsflow.asset.service.AssetService;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.common.response.PageResponse;
+import org.example.opsflow.operationlog.annotation.OperationLog;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class AssetController {
     private final AssetService assetService;
 
+    @OperationLog(
+            module = "ASSET",
+            action = "CREATE"
+    )
     @PostMapping
     public ApiResponse<AssetResponse> createAsset(@Valid @RequestBody CreateAssetRequest request){
         return ApiResponse.success(assetService.createAsset(request));
@@ -33,6 +38,11 @@ public class AssetController {
         return ApiResponse.success(assetService.getAssets(page,size));
     }
 
+    @OperationLog(
+            module = "ASSET",
+            action = "UPDATE",
+            targetIdArg = 0
+    )
     @PutMapping("/{id}")
     public ApiResponse<AssetResponse> updateAsset(
             @PathVariable Long id,
@@ -40,6 +50,11 @@ public class AssetController {
         return ApiResponse.success(assetService.updateAsset(id,request));
     }
 
+    @OperationLog(
+            module = "ASSET",
+            action = "UPDATE_STATUS",
+            targetIdArg = 0
+    )
     @PatchMapping("/{id}/status")
     public ApiResponse<Void> updateAssetStatus(
             @PathVariable Long id,
@@ -48,6 +63,11 @@ public class AssetController {
         return ApiResponse.success();
     }
 
+    @OperationLog(
+            module = "ASSET",
+            action = "UPDATE_USER",
+            targetIdArg = 0
+    )
     @PatchMapping("/{id}/assignee")
     public ApiResponse<Void> updateAssetAssignee(
             @PathVariable Long id,

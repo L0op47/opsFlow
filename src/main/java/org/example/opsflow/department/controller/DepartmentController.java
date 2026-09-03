@@ -9,6 +9,7 @@ import org.example.opsflow.department.dto.DepartmentResponse;
 import org.example.opsflow.department.dto.UpdateDepartmentRequest;
 import org.example.opsflow.department.dto.UpdateDepartmentStatusRequest;
 import org.example.opsflow.department.service.DepartmentService;
+import org.example.opsflow.operationlog.annotation.OperationLog;
 import org.example.opsflow.user.dto.UserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,10 @@ import java.util.List;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
+    @OperationLog(
+            module = "DEPARTMENT",
+            action = "CREATE"
+    )
     @PreAuthorize("hasAuthority('department:manage')")
     @PostMapping
     public ApiResponse<DepartmentResponse> createDepartment(
@@ -42,6 +47,11 @@ public class DepartmentController {
         return ApiResponse.success(departmentService.getDepartmentDetail(id));
     }
 
+    @OperationLog(
+            module = "DEPARTMENT",
+            action = "UPDATE",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('department:manage')")
     @PutMapping("/{id}")
     public ApiResponse<DepartmentResponse> updateDepartment(@PathVariable Long id,
@@ -51,6 +61,11 @@ public class DepartmentController {
 
     }
 
+    @OperationLog(
+            module = "DEPARTMENT",
+            action = "UPDATE_STATUS",
+            targetIdArg = 0
+    )
     @PreAuthorize("hasAuthority('department:manage')")
     @PatchMapping("/{id}/status")
     public ApiResponse<Void> updateDepartmentStatus(

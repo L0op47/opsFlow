@@ -3,6 +3,7 @@ package org.example.opsflow.rbac.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
+import org.example.opsflow.operationlog.annotation.OperationLog;
 import org.example.opsflow.rbac.dto.AssignPermissionsRequest;
 import org.example.opsflow.rbac.dto.CreateRoleRequest;
 import org.example.opsflow.rbac.dto.RoleDetailResponse;
@@ -22,6 +23,10 @@ import java.util.List;
 public class RoleController {
     private final RoleService roleService;
 
+    @OperationLog(
+            module = "ROLE",
+            action = "CREATE"
+    )
     @PostMapping
     public ApiResponse<RoleResponse> createRole(@Valid @RequestBody CreateRoleRequest request){
         return ApiResponse.success(roleService.createRole(request));
@@ -32,6 +37,11 @@ public class RoleController {
         return ApiResponse.success(roleService.getRoleList());
     }
 
+    @OperationLog(
+            module = "ROLE",
+            action = "UPDATE_PERMISSIONS",
+            targetIdArg = 0
+    )
     @PutMapping("/{id}/permissions")
     public ApiResponse<Void> assignPermissions(
             @PathVariable Long id,
@@ -46,6 +56,11 @@ public class RoleController {
         return ApiResponse.success(roleService.getRoleDetail(id));
     }
 
+    @OperationLog(
+            module = "ROLE",
+            action = "UPDATE",
+            targetIdArg = 0
+    )
     @PutMapping("/{id}")
     public ApiResponse<RoleResponse> updateRole(
             @PathVariable Long id,
@@ -54,6 +69,11 @@ public class RoleController {
         return ApiResponse.success(roleService.updateRole(id, request));
     }
 
+    @OperationLog(
+            module = "ROLE",
+            action = "UPDATE_STATUS",
+            targetIdArg = 0
+    )
     @PatchMapping("/{id}/status")
     public ApiResponse<Void> updateRoleStatus(
             @PathVariable Long id,
