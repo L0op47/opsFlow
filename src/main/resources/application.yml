@@ -21,7 +21,7 @@ spring:
 opsflow:
   ticket:
     sla:
-      scan-delay-ms:6000*60*12
+      scan-delay-ms: 300000
 
 jwt:
   secret: opsflow-jwt-secret-key-for-development-2026

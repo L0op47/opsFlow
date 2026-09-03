@@ -56,7 +56,7 @@
 
     <update id="updatePendingTicket">
         UPDATE sys_ticket
-        SET title = #{ticket.title},description = #{ticket.description},priority = #{ticket.priority},category = #{ticket.category}
+        SET title = #{ticket.title},description = #{ticket.description},priority = #{ticket.priority},category = #{ticket.category},deadline_at =#{ticket.deadlineAt}
         WHERE id = #{ticket.id} AND creator_id = #{creatorId} AND status = 'PENDING'
     </update>
 
@@ -102,7 +102,7 @@
         FROM sys_ticket
         WHERE deadline_at IS NOT NULL
         AND deadline_at  &lt; LOCALTIMESTAMP
-        AND status IN('PROCESSING','PROCESSING')
+        AND status IN('PENDING','PROCESSING')
         ORDER BY deadline_at ,id
     </select>
 
@@ -111,7 +111,7 @@
         FROM sys_ticket
         WHERE deadline_at IS NOT NULL
             AND deadline_at &lt; LOCALTIMESTAMP
-            AND status IN('PROCESSING','PROCESSING')
+            AND status IN('PENDING','PROCESSING')
     </select>
 
 

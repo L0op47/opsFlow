@@ -272,6 +272,7 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setDescription(description);
         ticket.setCategory(category);
         ticket.setPriority(priority);
+        ticket.setDeadlineAt(calculateDeadline(priority));
         int affectedRows = ticketMapper.updatePendingTicket(ticket,user.getId());
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单修改失败");
