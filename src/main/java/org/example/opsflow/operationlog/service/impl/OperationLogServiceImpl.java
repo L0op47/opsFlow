@@ -33,7 +33,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     }
 
     @Override
-    public PageResponse<OperationLogResponse> findAll(int page, int size, String operatorName, String module, Integer success) {
+    public PageResponse<OperationLogResponse> findAll(int page, int size, String operatorUsername, String module, Integer success) {
         if(page < 1){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
 
@@ -41,8 +41,8 @@ public class OperationLogServiceImpl implements OperationLogService {
         if(size < 1 || size > 100){
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
-        if(operatorName == null || operatorName.isEmpty()){
-            operatorName = null;
+        if(operatorUsername == null || operatorUsername.isEmpty()){
+            operatorUsername = null;
         }
         if(module == null || module.isEmpty()){
             module = null;
@@ -55,7 +55,7 @@ public class OperationLogServiceImpl implements OperationLogService {
         }
         PageHelper.startPage(page,size);
 
-        List<OperationLogRecord> logs = operationLogMapper.findAll(operatorName,module,success);
+        List<OperationLogRecord> logs = operationLogMapper.findAll(operatorUsername,module,success);
         PageInfo<OperationLogRecord> pageInfo = new PageInfo<>(logs);
         List<OperationLogResponse> records = operationLogConverter.toOperationLogResponseList(logs);
         return new PageResponse<>(

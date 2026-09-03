@@ -22,14 +22,14 @@ public class OperationLogController {
     public ApiResponse<PageResponse<OperationLogResponse>> getOperationLogPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String operatorName,
+            @RequestParam(required = false) String operatorUsername,
             @RequestParam(required = false) String module,
             @RequestParam(required = false) Integer success
     ){
         return ApiResponse.success(operationLogService.findAll(
                 page,
                 size,
-                operatorName,
+                operatorUsername,
                 module,
                 success
         ));

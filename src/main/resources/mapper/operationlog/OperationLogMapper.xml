@@ -36,8 +36,8 @@
             <include refid="Base_Column_List"/>
         FROM sys_operation_log
         <where>
-            <if test="operatorName != null">
-             AND operator_name = #{operatorName}
+            <if test="operatorUsername != null">
+             AND operator_username = #{operatorUsername}
             </if>
             <if test="module != null">
              AND module = #{module}

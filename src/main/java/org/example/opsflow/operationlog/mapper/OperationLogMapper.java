@@ -10,5 +10,5 @@ import java.util.List;
 public interface OperationLogMapper {
     int insertSelective(OperationLogRecord record);
 
-    List<OperationLogRecord> findAll(@Param("operatorName") String operatorName,@Param("module") String module,@Param("success") Integer success);
+    List<OperationLogRecord> findAll(@Param("operatorUsername") String operatorUsername,@Param("module") String module,@Param("success") Integer success);
 }

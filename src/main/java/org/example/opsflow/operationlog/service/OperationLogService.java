@@ -7,5 +7,5 @@ import org.example.opsflow.operationlog.entity.OperationLogRecord;
 public interface OperationLogService {
     void save(OperationLogRecord record);
 
-    PageResponse<OperationLogResponse> findAll(int page, int size, String operatorName, String module, Integer success);
+    PageResponse<OperationLogResponse> findAll(int page, int size, String operatorUsername, String module, Integer success);
 }
