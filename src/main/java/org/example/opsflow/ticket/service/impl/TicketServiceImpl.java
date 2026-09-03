@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -56,6 +57,7 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setStatus(TicketStatus.PENDING);
         ticket.setDepartmentId(currentUser.getDepartmentId());
         ticket.setCreatorId(currentUser.getId());
+        ticket.setDeadlineAt(calculateDeadline(priority));
         int affectedRows = ticketMapper.insert(ticket);
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单创建失败");
@@ -278,6 +280,32 @@ public class  TicketServiceImpl implements TicketService {
         return ticketConverter.toDetailResponse(savedTicket);
     }
 
+    @Override
+    public PageResponse<TicketSummaryResponse> getOverdueTickets(int page, int size) {
+        if(page < 1){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"页码必须大于等于1");
+
+        }
+        if(size < 1 || size > 100){
+            throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
+        }
+        PageHelper.startPage(page,size);
+        List<Ticket> tickets = ticketMapper.findOverdueTickets();
+        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
+        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        return new PageResponse<>(
+                records,
+                pageInfo.getTotal(),
+                page,
+                size
+        );
+    }
+
+    @Override
+    public Long countOverdueTickets() {
+        return  ticketMapper.countOverdueTickets();
+    }
+
 
     private String generateTicketNo(){
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -302,5 +330,15 @@ public class  TicketServiceImpl implements TicketService {
         if(historyAffectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED);
         }
+    }
+
+    private LocalDateTime calculateDeadline(TicketPriority priority){
+        LocalDateTime now = LocalDateTime.now();
+        return switch (priority){
+            case LOW -> now.plusHours(72);
+            case MEDIUM -> now.plusHours(48);
+            case HIGH -> now.plusHours(24);
+            case URGENT -> now.plusHours(4);
+        };
     }
 }

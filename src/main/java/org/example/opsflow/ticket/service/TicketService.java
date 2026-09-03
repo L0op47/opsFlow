@@ -28,4 +28,8 @@ public interface TicketService {
     List<TicketHistoryResponse> getTicketHistory(Long id,String name);
 
     TicketDetailResponse updateTicket(Long id, @Valid UpdateTicketRequest request, String name);
+
+    PageResponse<TicketSummaryResponse> getOverdueTickets(int page, int size);
+
+    Long countOverdueTickets();
 }

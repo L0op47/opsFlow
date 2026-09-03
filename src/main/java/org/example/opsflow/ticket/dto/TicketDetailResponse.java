@@ -25,4 +25,5 @@ public class TicketDetailResponse {
     private LocalDateTime closedAt;
     private LocalDateTime deadlineAt;
     private LocalDateTime updatedAt;
+    private boolean overdue;
 }

@@ -18,6 +18,10 @@ spring:
       port: 6379
       database: 0
       timeout: 2s
+opsflow:
+  ticket:
+    sla:
+      scan-delay-ms:6000*60*12
 
 jwt:
   secret: opsflow-jwt-secret-key-for-development-2026

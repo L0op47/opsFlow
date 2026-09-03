@@ -157,4 +157,13 @@ public class TicketController {
     ){
         return ApiResponse.success(ticketService.updateTicket(id,request,authentication.getName()));
     }
+
+    @GetMapping("/overdue")
+    @PreAuthorize("hasAuthority('ticket:read:pending')")
+    public ApiResponse<PageResponse<TicketSummaryResponse>> getOverdueTickets(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ApiResponse.success(ticketService.getOverdueTickets(page,size));
+    }
 }

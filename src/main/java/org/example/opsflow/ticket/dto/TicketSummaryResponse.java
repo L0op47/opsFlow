@@ -18,4 +18,6 @@ public class TicketSummaryResponse {
     private Long departmentId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deadlineAt;
+    private boolean overdue;
 }
