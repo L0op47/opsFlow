@@ -1,5 +1,8 @@
 package org.example.opsflow.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.auth.dto.CurrentUserResponse;
@@ -20,18 +23,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(
+        name = "认证管理",
+        description = "用户注册、登录、退出和当前用户信息"
+)
 public class AuthController {
     private final AuthService authService;
     private final UserRoleService userRoleService;
     private final RolePermissionService rolePermissionService;
 
+    @SecurityRequirements
+    @Operation(summary = "用户登录")
     @PostMapping("/register")
     public ApiResponse<Void> register(@Valid @RequestBody RegisterRequest registerRequest){
         authService.register(registerRequest);
         return ApiResponse.success();
     }
 
-
+    @SecurityRequirements
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
         return ApiResponse.success(authService.login(loginRequest));

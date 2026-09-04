@@ -1,5 +1,7 @@
 package org.example.opsflow.ticket.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
@@ -17,6 +19,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
+@Tag(
+        name = "工单管理",
+        description = "工单创建、查询、状态流转和 SLA 管理"
+)
 public class TicketController {
     private final TicketService ticketService;
 
@@ -160,6 +166,10 @@ public class TicketController {
 
     @GetMapping("/overdue")
     @PreAuthorize("hasAuthority('ticket:read:pending')")
+    @Operation(
+            summary = "查询超时工单",
+            description = "分页查询已超过截止时间，且状态为 PENDING 或 PROCESSING 的工单"
+    )
     public ApiResponse<PageResponse<TicketSummaryResponse>> getOverdueTickets(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
