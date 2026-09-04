@@ -33,7 +33,7 @@ public class AuthController {
     private final RolePermissionService rolePermissionService;
 
     @SecurityRequirements
-    @Operation(summary = "用户登录")
+    @Operation(summary = "用户注册")
     @PostMapping("/register")
     public ApiResponse<Void> register(@Valid @RequestBody RegisterRequest registerRequest){
         authService.register(registerRequest);

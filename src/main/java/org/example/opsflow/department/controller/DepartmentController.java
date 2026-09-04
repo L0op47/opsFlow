@@ -1,5 +1,6 @@
 package org.example.opsflow.department.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/departments")
+@Tag(name = "部门管理", description = "部门信息管理")
 public class DepartmentController {
     private final DepartmentService departmentService;
 

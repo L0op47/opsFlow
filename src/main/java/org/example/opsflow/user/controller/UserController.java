@@ -1,5 +1,6 @@
 package org.example.opsflow.user.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasAuthority('user:manage')")
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "用户管理", description = "用户信息和用户状态管理")
 public class UserController {
     private final UserService userService;
     private final UserRoleService userRoleService;

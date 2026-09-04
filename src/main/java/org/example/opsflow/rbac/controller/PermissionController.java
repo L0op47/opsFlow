@@ -1,5 +1,6 @@
 package org.example.opsflow.rbac.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
 import org.example.opsflow.rbac.dto.PermissionResponse;
@@ -15,6 +16,7 @@ import java.util.List;
 @PreAuthorize("hasAuthority('role:manage')")
 @RequestMapping("/api/v1/permissions")
 @RequiredArgsConstructor
+@Tag(name = "权限管理", description = "系统权限信息查询")
 public class PermissionController {
     private final PermissionService permissionService;
 

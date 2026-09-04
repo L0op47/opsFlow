@@ -1,5 +1,6 @@
 package org.example.opsflow.rbac.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.common.response.ApiResponse;
@@ -20,6 +21,7 @@ import java.util.List;
 @PreAuthorize("hasAuthority('role:manage')")
 @RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
+@Tag(name = "角色管理", description = "角色及角色权限管理")
 public class RoleController {
     private final RoleService roleService;
 

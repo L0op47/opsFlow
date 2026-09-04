@@ -1,5 +1,6 @@
 package org.example.opsflow.asset.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.opsflow.asset.dto.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/assets")
 @PreAuthorize("hasAuthority('asset:manage')")
+@Tag(name = "资产管理", description = "资产创建、查询、修改和分配")
 public class AssetController {
     private final AssetService assetService;
 
