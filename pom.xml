@@ -139,6 +139,11 @@
             <version>3.20.0</version>
         </dependency>
 
+        <!-- 系统监控与健康检查 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
     </dependencies>
 
