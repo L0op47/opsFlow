@@ -19,7 +19,7 @@ public class NotificationController {
             Authentication authentication,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "0") int readStatus){
+            @RequestParam(required = false) Integer readStatus){
         PageResponse<NotificationResponse> response = notificationService.getMyNotifications(authentication.getName(),page,size,readStatus);
         return ApiResponse.success(response);
     }

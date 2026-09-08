@@ -142,7 +142,7 @@
         update sys_notification
         set read_status = 1,
             read_at = current_timestamp
-        where id = #{id} and recipient_user_id = #{recipientUserId}
+        where id = #{id} and recipient_user_id = #{recipientUserId} and read_status = 0
 
 
     </update>
