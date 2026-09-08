@@ -164,6 +164,18 @@ public enum ErrorCode {
             "资产已被禁用"
     ),
 
+    NOTIFICATION_NOT_FOUND(
+            80001,
+            HttpStatus.NOT_FOUND,
+            "通知不存在"
+    ),
+
+    INVALID_NOTIFICATION_READ_STATUS(
+            80002,
+            HttpStatus.BAD_REQUEST,
+            "通知已读状态只能是0或者1"
+    ),
+
     // 系统错误：90000～99999
     INTERNAL_SERVER_ERROR(
             90001,

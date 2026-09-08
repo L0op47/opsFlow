@@ -10,6 +10,12 @@ spring:
       port: 6379
       database: 0
       timeout: 2s
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: /opsflow
 
 jwt:
   secret: ${JWT_SECRET}

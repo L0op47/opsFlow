@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.opsflow.notification.mapper.NotificationMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.opsflow.notification.entity.Notification">
+            <id property="id" column="id" />
+            <result property="eventId" column="event_id" />
+            <result property="recipientUserId" column="recipient_user_id" />
+            <result property="type" column="type" />
+            <result property="title" column="title" />
+            <result property="content" column="content" />
+            <result property="businessType" column="business_type" />
+            <result property="businessId" column="business_id" />
+            <result property="readStatus" column="read_status" />
+            <result property="createdAt" column="created_at" />
+            <result property="readAt" column="read_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,event_id,recipient_user_id,type,title,content,
+        business_type,business_id,read_status,created_at,read_at
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from sys_notification
+        where  id = #{id} 
+    </select>
+    <select id="findByRecipientUserId" resultType="org.example.opsflow.notification.entity.Notification">
+        select
+        <include refid="Base_Column_List" />
+        from sys_notification
+        where  recipient_user_id = #{recipientUserId}
+        <if test="readStatus != null">
+            AND read_status = #{readStatus}
+        </if>
+        order by created_at DESC
+    </select>
+    <select id="findByIdAndRecipientUserId" resultType="org.example.opsflow.notification.entity.Notification">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_notification
+        where id = #{id} and recipient_user_id = #{recipientUserId}
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_notification
+        where  id = #{id} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.notification.entity.Notification" useGeneratedKeys="true">
+        insert into sys_notification
+        ( id,event_id,recipient_user_id,type,title,content,
+        business_type,business_id,read_status,created_at,read_at)
+        values (#{id},#{eventId},#{recipientUserId},#{type},#{title},#{content},
+        #{businessType},#{businessId},#{readStatus},#{createdAt},#{readAt})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.notification.entity.Notification" useGeneratedKeys="true">
+        insert into sys_notification
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="eventId != null">event_id,</if>
+                <if test="recipientUserId != null">recipient_user_id,</if>
+                <if test="type != null">type,</if>
+                <if test="title != null">title,</if>
+                <if test="content != null">content,</if>
+                <if test="businessType != null">business_type,</if>
+                <if test="businessId != null">business_id,</if>
+                <if test="readStatus != null">read_status,</if>
+                <if test="createdAt != null">created_at,</if>
+                <if test="readAt != null">read_at,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="eventId != null">#{eventId},</if>
+                <if test="recipientUserId != null">#{recipientUserId},</if>
+                <if test="type != null">#{type},</if>
+                <if test="title != null">#{title},</if>
+                <if test="content != null">#{content},</if>
+                <if test="businessType != null">#{businessType},</if>
+                <if test="businessId != null">#{businessId},</if>
+                <if test="readStatus != null">#{readStatus},</if>
+                <if test="createdAt != null">#{createdAt},</if>
+                <if test="readAt != null">#{readAt},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.example.opsflow.notification.entity.Notification">
+        update sys_notification
+        <set>
+                <if test="eventId != null">
+                    event_id = #{eventId},
+                </if>
+                <if test="recipientUserId != null">
+                    recipient_user_id = #{recipientUserId},
+                </if>
+                <if test="type != null">
+                    type = #{type},
+                </if>
+                <if test="title != null">
+                    title = #{title},
+                </if>
+                <if test="content != null">
+                    content = #{content},
+                </if>
+                <if test="businessType != null">
+                    business_type = #{businessType},
+                </if>
+                <if test="businessId != null">
+                    business_id = #{businessId},
+                </if>
+                <if test="readStatus != null">
+                    read_status = #{readStatus},
+                </if>
+                <if test="createdAt != null">
+                    created_at = #{createdAt},
+                </if>
+                <if test="readAt != null">
+                    read_at = #{readAt},
+                </if>
+        </set>
+        where   id = #{id} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.example.opsflow.notification.entity.Notification">
+        update sys_notification
+        set 
+            event_id =  #{eventId},
+            recipient_user_id =  #{recipientUserId},
+            type =  #{type},
+            title =  #{title},
+            content =  #{content},
+            business_type =  #{businessType},
+            business_id =  #{businessId},
+            read_status =  #{readStatus},
+            created_at =  #{createdAt},
+            read_at =  #{readAt}
+        where   id = #{id} 
+    </update>
+    <update id="markAsRead">
+        update sys_notification
+        set read_status = 1,
+            read_at = current_timestamp
+        where id = #{id} and recipient_user_id = #{recipientUserId}
+
+
+    </update>
+</mapper>
