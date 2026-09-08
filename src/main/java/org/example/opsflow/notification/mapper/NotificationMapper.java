@@ -1,8 +1,9 @@
 package org.example.opsflow.notification.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.opsflow.notification.entity.Notification;
-import org.mapstruct.Mapper;
+
 
 import java.util.List;
 
