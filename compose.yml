@@ -29,6 +29,25 @@ services:
       timeout: 3s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:4.3.5-management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: /opsflow
+      TZ: Asia/Shanghai
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "15673:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   app:
     build: .
     image: opsflow:1.0
@@ -42,6 +61,13 @@ services:
       REDIS_DATABASE: 0
       JWT_SECRET: ${JWT_SECRET}
       JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VIRTUAL_HOST: /opsflow
+
+
     ports:
       - "8080:8080"
     depends_on:
@@ -49,7 +75,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   mysql_data:
   redis_data:
+  rabbitmq_data:
