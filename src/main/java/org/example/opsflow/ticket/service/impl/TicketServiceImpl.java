@@ -224,7 +224,7 @@ public class  TicketServiceImpl implements TicketService {
                     TicketStatus.RESOLVED,
                     TicketStatus.CLOSED,
                     currentUser.getId(),
-                    ticket.getCreatorId()
+                    ticket.getAssigneeId()
             );
             return;
         }

@@ -20,9 +20,9 @@ public class TicketEventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
     public void publishStatusChanged(TicketStatusChangedEvent event) {
-        String routing_key = ROUTING_KEY_PREFIX + event.getToStatus().name().toLowerCase(Locale.ROOT);
+        String routingKey = ROUTING_KEY_PREFIX + event.getToStatus().name().toLowerCase(Locale.ROOT);
         CorrelationData correlationData = new CorrelationData(event.getEventId());
-        rabbitTemplate.convertAndSend(RabbitMqConfig.TICKET_EVENT_EXCHANGE,routing_key, event,correlationData);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.TICKET_EVENT_EXCHANGE,routingKey, event,correlationData);
         correlationData.getFuture().whenComplete((confirm, throwable) -> {
             if (throwable != null) {
                 log.error(

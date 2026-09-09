@@ -37,7 +37,7 @@
         <if test="readStatus != null">
             AND read_status = #{readStatus}
         </if>
-        order by created_at DESC
+        order by created_at DESC,id DESC 
     </select>
     <select id="findByIdAndRecipientUserId" resultType="org.example.opsflow.notification.entity.Notification">
         select
