@@ -13,8 +13,10 @@ import org.example.opsflow.ticket.entity.TicketHistory;
 import org.example.opsflow.ticket.enums.TicketAction;
 import org.example.opsflow.ticket.enums.TicketPriority;
 import org.example.opsflow.ticket.enums.TicketStatus;
+import org.example.opsflow.ticket.event.TicketStatusChangedEvent;
 import org.example.opsflow.ticket.mapper.TicketHistoryMapper;
 import org.example.opsflow.ticket.mapper.TicketMapper;
+import org.example.opsflow.ticket.messaging.TicketEventPublisher;
 import org.example.opsflow.ticket.service.TicketService;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.service.UserService;
@@ -34,6 +36,7 @@ public class  TicketServiceImpl implements TicketService {
     private final UserService userService;
     private final TicketConverter ticketConverter;
     private final TicketHistoryMapper ticketHistoryMapper;
+    private final TicketEventPublisher ticketEventPublisher;
 
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
@@ -155,6 +158,16 @@ public class  TicketServiceImpl implements TicketService {
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.ACCEPT,
                     TicketStatus.PENDING,TicketStatus.PROCESSING);
+            Ticket ticket = ticketMapper.findById(id);
+
+            publishStatusChangeEvent(
+                    ticket,
+                    TicketStatus.PENDING,
+                    TicketStatus.PROCESSING,
+                    currentUser.getId(),
+                    ticket.getCreatorId()
+            );
+
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -172,6 +185,15 @@ public class  TicketServiceImpl implements TicketService {
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.RESOLVE,
                     TicketStatus.PROCESSING,TicketStatus.RESOLVED);
+            Ticket ticket = ticketMapper.findById(id);
+
+            publishStatusChangeEvent(
+                    ticket,
+                    TicketStatus.PROCESSING,
+                    TicketStatus.RESOLVED,
+                    currentUser.getId(),
+                    ticket.getCreatorId()
+            );
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -195,6 +217,15 @@ public class  TicketServiceImpl implements TicketService {
         if (affectedRows == 1) {
             recordTicketHistory(id,currentUser.getId(),TicketAction.CLOSE,
                     TicketStatus.RESOLVED,TicketStatus.CLOSED);
+            Ticket ticket = ticketMapper.findById(id);
+
+            publishStatusChangeEvent(
+                    ticket,
+                    TicketStatus.RESOLVED,
+                    TicketStatus.CLOSED,
+                    currentUser.getId(),
+                    ticket.getCreatorId()
+            );
             return;
         }
         Ticket ticket = ticketMapper.findById(id);
@@ -341,5 +372,25 @@ public class  TicketServiceImpl implements TicketService {
             case HIGH -> now.plusHours(24);
             case URGENT -> now.plusHours(4);
         };
+    }
+
+    private void publishStatusChangeEvent(
+            Ticket ticket,
+            TicketStatus fromStatus,
+            TicketStatus toStatus,
+            Long operatorUserId,
+            Long recipientUserId){
+        TicketStatusChangedEvent event = TicketStatusChangedEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .ticketId(ticket.getId())
+                .ticketNo(ticket.getTicketNo())
+                .ticketTitle(ticket.getTitle())
+                .fromStatus(fromStatus)
+                .toStatus(toStatus)
+                .operatorUserId(operatorUserId)
+                .recipientUserId(recipientUserId)
+                .occurredAt(LocalDateTime.now())
+                .build();
+        ticketEventPublisher.publishStatusChanged(event);
     }
 }

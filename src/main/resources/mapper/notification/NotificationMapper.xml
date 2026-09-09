@@ -53,10 +53,10 @@
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.notification.entity.Notification" useGeneratedKeys="true">
         insert into sys_notification
-        ( id,event_id,recipient_user_id,type,title,content,
-        business_type,business_id,read_status,created_at,read_at)
-        values (#{id},#{eventId},#{recipientUserId},#{type},#{title},#{content},
-        #{businessType},#{businessId},#{readStatus},#{createdAt},#{readAt})
+        (event_id,recipient_user_id,type,title,content,
+        business_type,business_id,read_status,created_at)
+        values (#{eventId},#{recipientUserId},#{type},#{title},#{content},
+        #{businessType},#{businessId},#{readStatus},#{createdAt})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.notification.entity.Notification" useGeneratedKeys="true">
         insert into sys_notification

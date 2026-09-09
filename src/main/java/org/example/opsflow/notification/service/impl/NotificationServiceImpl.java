@@ -3,6 +3,7 @@ package org.example.opsflow.notification.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
@@ -11,8 +12,10 @@ import org.example.opsflow.notification.dto.NotificationResponse;
 import org.example.opsflow.notification.entity.Notification;
 import org.example.opsflow.notification.mapper.NotificationMapper;
 import org.example.opsflow.notification.service.NotificationService;
+import org.example.opsflow.ticket.event.TicketStatusChangedEvent;
 import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.service.UserService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
     private final UserService userService;
@@ -70,5 +74,40 @@ public class NotificationServiceImpl implements NotificationService {
         if(affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"通知标记已读失败");
         }
+    }
+
+    @Override
+    @Transactional
+    public void createFromTicketStatusChangedEvent(TicketStatusChangedEvent event) {
+        Notification notification = new Notification();
+        notification.setCreatedAt(event.getOccurredAt());
+        notification.setRecipientUserId(event.getRecipientUserId());
+        notification.setEventId(event.getEventId());
+        notification.setType("TICKET_STATUS_CHANGED");
+        notification.setBusinessType("TICKET");
+        notification.setBusinessId(event.getTicketId());
+        notification.setReadStatus(0);
+        notification.setTitle("工单状态已更新");
+        notification.setContent(
+                "工单〖"
+                + event.getTicketNo()
+                + "-"
+                + event.getTicketTitle()
+                + "〗状态已更新为："
+                + event.getToStatus()
+        );
+        try {
+            int affectedRows = notificationMapper.insert(notification);
+            if(affectedRows != 1){
+                throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"通知创建失败");
+            }
+        } catch (DuplicateKeyException e) {
+            log.info(
+                    "重复通知消息已忽略，eventId={}, recipientUserId={}",
+                    event.getEventId(),
+                    event.getRecipientUserId());
+        }
+
+
     }
 }

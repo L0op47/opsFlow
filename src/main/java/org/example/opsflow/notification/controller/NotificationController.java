@@ -20,8 +20,7 @@ public class NotificationController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Integer readStatus){
-        PageResponse<NotificationResponse> response = notificationService.getMyNotifications(authentication.getName(),page,size,readStatus);
-        return ApiResponse.success(response);
+        return ApiResponse.success( notificationService.getMyNotifications(authentication.getName(),page,size,readStatus));
     }
 
     @PatchMapping("/{id}/read")
@@ -32,4 +31,6 @@ public class NotificationController {
         notificationService.markAsRead(authentication.getName(),id);
         return ApiResponse.success();
     }
+
+
 }

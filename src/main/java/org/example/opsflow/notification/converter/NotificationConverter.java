@@ -13,11 +13,9 @@ import java.util.List;
 )
 public interface NotificationConverter {
 
-//    NotificationResponse toNotificationResponse(
-//            Notification notification
-//    );
-
     List<NotificationResponse> toNotificationResponseList(
             List<Notification> notifications
     );
+
+
 }
