@@ -1,6 +1,7 @@
 package org.example.opsflow.ticket.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.example.opsflow.ticket.enums.TicketPriority;
@@ -18,4 +19,7 @@ public class UpdateTicketRequest {
     private String category;
 
     private TicketPriority priority;
+
+    @Positive(message = "资产ID必须大于0")
+    private Long assetId;
 }

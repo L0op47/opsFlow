@@ -22,12 +22,79 @@
         deadline_at,
         updated_at
     </sql>
+
+    <sql id="Overdue_Column">
+        CASE
+            WHEN t.deadline_at IS NOT NULL
+             AND t.deadline_at &lt; LOCALTIMESTAMP
+             AND t.status IN ('PENDING', 'PROCESSING')
+            THEN 1
+            ELSE 0
+        END AS overdue
+    </sql>
+
+    <sql id="Ticket_Display_From">
+        FROM sys_ticket t
+        LEFT JOIN sys_user creator
+               ON creator.id = t.creator_id
+        LEFT JOIN sys_user assignee
+               ON assignee.id = t.assignee_id
+        LEFT JOIN sys_department department
+               ON department.id = t.department_id
+        LEFT JOIN sys_asset asset
+               ON asset.id = t.asset_id
+    </sql>
+
+    <sql id="Ticket_Summary_Columns">
+        t.id,
+        t.ticket_no,
+        t.title,
+        t.category,
+        t.priority,
+        t.status,
+        t.creator_id,
+        creator.real_name AS creator_name,
+        t.assignee_id,
+        assignee.real_name AS assignee_name,
+        t.department_id,
+        department.name AS department_name,
+        t.created_at,
+        t.updated_at,
+        t.deadline_at,
+        <include refid="Overdue_Column"/>
+    </sql>
+
+    <sql id="Ticket_Detail_Columns">
+        t.id,
+        t.ticket_no,
+        t.title,
+        t.description,
+        t.category,
+        t.priority,
+        t.status,
+        t.creator_id,
+        creator.real_name AS creator_name,
+        t.assignee_id,
+        assignee.real_name AS assignee_name,
+        t.department_id,
+        department.name AS department_name,
+        t.asset_id,
+        asset.asset_no,
+        asset.name AS asset_name,
+        t.created_at,
+        t.accepted_at,
+        t.resolved_at,
+        t.closed_at,
+        t.deadline_at,
+        t.updated_at,
+        <include refid="Overdue_Column"/>
+    </sql>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.example.opsflow.ticket.entity.Ticket" useGeneratedKeys="true">
         insert into sys_ticket
         (ticket_no,title,description,category,priority,
-        status,creator_id,department_id,deadline_at)
+        status,asset_id,creator_id,department_id,deadline_at)
         values (#{ticketNo,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{category,jdbcType=VARCHAR},#{priority,jdbcType=VARCHAR},
-        #{status,jdbcType=VARCHAR},#{creatorId,jdbcType=BIGINT},#{departmentId,jdbcType=BIGINT},#{deadlineAt,jdbcType=TIMESTAMP})
+        #{status,jdbcType=VARCHAR},#{assetId,jdbcType=BIGINT},#{creatorId,jdbcType=BIGINT},#{departmentId,jdbcType=BIGINT},#{deadlineAt,jdbcType=TIMESTAMP})
     </insert>
 
     <update id="acceptTicket">
@@ -56,19 +123,10 @@
 
     <update id="updatePendingTicket">
         UPDATE sys_ticket
-        SET title = #{ticket.title},description = #{ticket.description},priority = #{ticket.priority},category = #{ticket.category},deadline_at =#{ticket.deadlineAt}
+        SET title = #{ticket.title},description = #{ticket.description},priority = #{ticket.priority},asset_id = #{ticket.assetId},category = #{ticket.category},deadline_at =#{ticket.deadlineAt}
         WHERE id = #{ticket.id} AND creator_id = #{creatorId} AND status = 'PENDING'
     </update>
 
-
-    <select id="findByCreatorId"
-            resultType="org.example.opsflow.ticket.entity.Ticket">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM sys_ticket
-        WHERE creator_id = #{creatorId}
-        ORDER BY created_at DESC,id DESC
-    </select>
 
     <select id="findById"
             resultType="org.example.opsflow.ticket.entity.Ticket">
@@ -78,32 +136,52 @@
         WHERE id = #{id}
     </select>
 
-    <select id="findPendingTickets"
-            resultType="org.example.opsflow.ticket.entity.Ticket">
+    <select id="findDetailResponseById"
+            resultType="org.example.opsflow.ticket.dto.TicketDetailResponse">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM sys_ticket
-        WHERE status = 'PENDING' AND assignee_id IS NULL
-        ORDER BY created_at DESC,id DESC
+        <include refid="Ticket_Detail_Columns"/>
+        <include refid="Ticket_Display_From"/>
+        WHERE t.id = #{id}
     </select>
 
-    <select id="findProcessingByAssigneeId" resultType="org.example.opsflow.ticket.entity.Ticket">
+    <select id="findSummariesByCreatorId"
+            resultType="org.example.opsflow.ticket.dto.TicketSummaryResponse">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM sys_ticket
-        WHERE assignee_id = #{assigneeId}
-        AND status = 'PROCESSING'
-        ORDER BY accepted_at DESC,id DESC
+        <include refid="Ticket_Summary_Columns"/>
+        <include refid="Ticket_Display_From"/>
+        WHERE t.creator_id = #{creatorId}
+        ORDER BY t.created_at DESC, t.id DESC
     </select>
 
-    <select id="findOverdueTickets" resultType="org.example.opsflow.ticket.entity.Ticket">
+    <select id="findPendingSummaries"
+            resultType="org.example.opsflow.ticket.dto.TicketSummaryResponse">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM sys_ticket
-        WHERE deadline_at IS NOT NULL
-        AND deadline_at  &lt; LOCALTIMESTAMP
-        AND status IN('PENDING','PROCESSING')
-        ORDER BY deadline_at ,id
+        <include refid="Ticket_Summary_Columns"/>
+        <include refid="Ticket_Display_From"/>
+        WHERE t.status = 'PENDING'
+          AND t.assignee_id IS NULL
+        ORDER BY t.created_at DESC, t.id DESC
+    </select>
+
+    <select id="findProcessingSummariesByAssigneeId"
+            resultType="org.example.opsflow.ticket.dto.TicketSummaryResponse">
+        SELECT
+        <include refid="Ticket_Summary_Columns"/>
+        <include refid="Ticket_Display_From"/>
+        WHERE t.assignee_id = #{assigneeId}
+          AND t.status = 'PROCESSING'
+        ORDER BY t.accepted_at DESC, t.id DESC
+    </select>
+
+    <select id="findOverdueSummaries"
+            resultType="org.example.opsflow.ticket.dto.TicketSummaryResponse">
+        SELECT
+        <include refid="Ticket_Summary_Columns"/>
+        <include refid="Ticket_Display_From"/>
+        WHERE t.deadline_at IS NOT NULL
+          AND t.deadline_at &lt; LOCALTIMESTAMP
+          AND t.status IN ('PENDING', 'PROCESSING')
+        ORDER BY t.deadline_at , t.id
     </select>
 
     <select id="countOverdueTickets" resultType="long">
@@ -113,6 +191,4 @@
             AND deadline_at &lt; LOCALTIMESTAMP
             AND status IN('PENDING','PROCESSING')
     </select>
-
-
 </mapper>

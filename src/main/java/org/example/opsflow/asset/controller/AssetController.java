@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/assets")
-@PreAuthorize("hasAuthority('asset:manage')")
 @Tag(name = "资产管理", description = "资产创建、查询、修改和分配")
 public class AssetController {
     private final AssetService assetService;
@@ -24,6 +23,7 @@ public class AssetController {
             action = "CREATE"
     )
     @PostMapping
+    @PreAuthorize("hasAuthority('asset:manage')")
     public ApiResponse<AssetResponse> createAsset(@Valid @RequestBody CreateAssetRequest request){
         return ApiResponse.success(assetService.createAsset(request));
     }
@@ -46,6 +46,7 @@ public class AssetController {
             targetIdArg = 0
     )
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('asset:manage')")
     public ApiResponse<AssetResponse> updateAsset(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAssetRequest request){
@@ -58,6 +59,7 @@ public class AssetController {
             targetIdArg = 0
     )
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('asset:manage')")
     public ApiResponse<Void> updateAssetStatus(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAssetStatusRequest request){
@@ -71,6 +73,7 @@ public class AssetController {
             targetIdArg = 0
     )
     @PatchMapping("/{id}/assignee")
+    @PreAuthorize("hasAuthority('asset:manage')")
     public ApiResponse<Void> updateAssetAssignee(
             @PathVariable Long id,
             @Valid @RequestBody AssignAssetUserRequest request){

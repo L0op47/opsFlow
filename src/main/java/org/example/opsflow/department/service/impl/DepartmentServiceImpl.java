@@ -13,9 +13,7 @@ import org.example.opsflow.department.entiy.Department;
 import org.example.opsflow.department.mapper.DepartmentMapper;
 import org.example.opsflow.department.dto.DepartmentResponse;
 import org.example.opsflow.department.service.DepartmentService;
-import org.example.opsflow.user.converter.UserConverter;
 import org.example.opsflow.user.dto.UserResponse;
-import org.example.opsflow.user.entity.User;
 import org.example.opsflow.user.mapper.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,6 @@ import java.util.Objects;
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentMapper departmentMapper;
     private final UserMapper userMapper;
-    private final UserConverter userConverter;
     private final DepartmentConverter departmentConverter;
 
     @Override
@@ -114,9 +111,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         exitDepartment(id);
         PageHelper.startPage(page,size);
 
-        List<User> users = userMapper.findByDepartmentId(id);
-        PageInfo<User> pageInfo = new PageInfo<>(users);
-        List<UserResponse> records = userConverter.toUserResponseList(users);
+        List<UserResponse> records = userMapper.findResponsesByDepartmentId(id);
+        PageInfo<UserResponse> pageInfo = new PageInfo<>(records);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),

@@ -4,6 +4,22 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.example.opsflow.user.mapper.UserMapper">
+    <sql id="User_Response_Columns">
+        u.id,
+        u.username,
+        u.real_name AS real_name,
+        u.email,
+        u.phone,
+        u.department_id AS department_id,
+        department.name AS department_name,
+        u.status
+    </sql>
+
+    <sql id="User_Response_From">
+        FROM sys_user u
+        LEFT JOIN sys_department department ON department.id = u.department_id
+    </sql>
+
     <select id="findAll"
             resultType="org.example.opsflow.user.entity.User">
         SELECT id,
@@ -15,6 +31,14 @@
                 status
         FROM sys_user
         ORDER BY id DESC
+    </select>
+
+    <select id="findAllResponses"
+            resultType="org.example.opsflow.user.dto.UserResponse">
+        SELECT
+        <include refid="User_Response_Columns"/>
+        <include refid="User_Response_From"/>
+        ORDER BY u.id DESC
     </select>
 
     <select id="findByDepartmentId"
@@ -29,5 +53,32 @@
         FROM sys_user
         WHERE department_id = #{id}
         ORDER BY id DESC
+    </select>
+
+    <select id="findResponseById"
+            resultType="org.example.opsflow.user.dto.UserResponse">
+        SELECT
+        <include refid="User_Response_Columns"/>
+        <include refid="User_Response_From"/>
+        WHERE u.id = #{id}
+    </select>
+
+    <select id="findDetailResponseById"
+            resultType="org.example.opsflow.user.dto.UserDetailResponse">
+        SELECT
+        <include refid="User_Response_Columns"/>,
+        u.created_at AS created_at,
+        u.updated_at AS updated_at
+        <include refid="User_Response_From"/>
+        WHERE u.id = #{id}
+    </select>
+
+    <select id="findResponsesByDepartmentId"
+            resultType="org.example.opsflow.user.dto.UserResponse">
+        SELECT
+        <include refid="User_Response_Columns"/>
+        <include refid="User_Response_From"/>
+        WHERE u.department_id = #{id}
+        ORDER BY u.id DESC
     </select>
 </mapper>

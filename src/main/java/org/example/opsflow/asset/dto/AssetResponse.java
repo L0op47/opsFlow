@@ -18,6 +18,8 @@ public class AssetResponse {
 
     private Long assignedUserId;
 
+//    private String assignedUserName;
+
     private Integer status;
 
     private LocalDateTime createdAt;

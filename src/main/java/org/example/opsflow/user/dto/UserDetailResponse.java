@@ -20,6 +20,8 @@ public class UserDetailResponse {
 
     private Long departmentId;
 
+    private String departmentName;
+
     private Integer status;
 
     private LocalDateTime createdAt;

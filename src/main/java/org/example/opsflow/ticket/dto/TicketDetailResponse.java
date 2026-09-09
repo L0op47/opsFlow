@@ -16,9 +16,14 @@ public class TicketDetailResponse {
     private TicketPriority priority;
     private TicketStatus status;
     private Long creatorId;
+    private String creatorName;
     private Long assigneeId;
+    private String assigneeName;
     private Long departmentId;
+    private String departmentName;
     private Long assetId;
+    private String assetNo;
+    private String assetName;
     private LocalDateTime createdAt;
     private LocalDateTime acceptedAt;
     private LocalDateTime resolvedAt;

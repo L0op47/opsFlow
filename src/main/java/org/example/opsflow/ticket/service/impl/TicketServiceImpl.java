@@ -3,10 +3,11 @@ package org.example.opsflow.ticket.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import org.example.opsflow.asset.entity.Asset;
+import org.example.opsflow.asset.mapper.AssetMapper;
 import org.example.opsflow.common.exception.BusinessException;
 import org.example.opsflow.common.exception.ErrorCode;
 import org.example.opsflow.common.response.PageResponse;
-import org.example.opsflow.ticket.converter.TicketConverter;
 import org.example.opsflow.ticket.dto.*;
 import org.example.opsflow.ticket.entity.Ticket;
 import org.example.opsflow.ticket.entity.TicketHistory;
@@ -34,14 +35,20 @@ import java.util.*;
 public class  TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final UserService userService;
-    private final TicketConverter ticketConverter;
     private final TicketHistoryMapper ticketHistoryMapper;
     private final TicketEventPublisher ticketEventPublisher;
+    private final AssetMapper assetMapper;
 
     @Override
     public TicketDetailResponse createTicket(CreateTicketRequest request, String name) {
         User currentUser = userService.getActiveUser(name);
-
+        Asset asset = assetMapper.findById(request.getAssetId());
+        if(asset == null){
+            throw new BusinessException(ErrorCode.ASSET_NOT_FOUND);
+        }
+        if(!Objects.equals(asset.getStatus(),1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
         String title = request.getTitle().trim();
         String description = request.getDescription().trim();
         String category = request.getCategory()
@@ -61,12 +68,12 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setDepartmentId(currentUser.getDepartmentId());
         ticket.setCreatorId(currentUser.getId());
         ticket.setDeadlineAt(calculateDeadline(priority));
+        ticket.setAssetId(asset.getId());
         int affectedRows = ticketMapper.insert(ticket);
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单创建失败");
         }
-        Ticket savedTicket = ticketMapper.findById(ticket.getId());
-        return ticketConverter.toDetailResponse(savedTicket);
+        return ticketMapper.findDetailResponseById(ticket.getId());
     }
 
     @Override
@@ -81,9 +88,9 @@ public class  TicketServiceImpl implements TicketService {
         User currentUser = userService.getActiveUser(name);
 
         PageHelper.startPage(page,size);
-        List<Ticket> tickets = ticketMapper.findByCreatorId(currentUser.getId());
-        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
-        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        List<TicketSummaryResponse> records =
+                ticketMapper.findSummariesByCreatorId(currentUser.getId());
+        PageInfo<TicketSummaryResponse> pageInfo = new PageInfo<>(records);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),
@@ -102,7 +109,14 @@ public class  TicketServiceImpl implements TicketService {
         if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
         }
-        return ticketConverter.toDetailResponse(ticket);
+        TicketDetailResponse response = ticketMapper.findDetailResponseById(id);
+        if (response == null) {
+            throw new BusinessException(
+                    ErrorCode.DATABASE_OPERATION_FAILED,
+                    "工单详情查询失败"
+            );
+        }
+        return response;
     }
 
     @Override
@@ -115,9 +129,8 @@ public class  TicketServiceImpl implements TicketService {
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
         PageHelper.startPage(page,size);
-        List<Ticket> tickets = ticketMapper.findPendingTickets();
-        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
-        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        List<TicketSummaryResponse> records = ticketMapper.findPendingSummaries();
+        PageInfo<TicketSummaryResponse> pageInfo = new PageInfo<>(records);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),
@@ -139,9 +152,9 @@ public class  TicketServiceImpl implements TicketService {
         }
         User currentUser = userService.getActiveUser(name);
         PageHelper.startPage(page,size);
-        List<Ticket> tickets = ticketMapper.findProcessingByAssigneeId(currentUser.getId());
-        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
-        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        List<TicketSummaryResponse> records =
+                ticketMapper.findProcessingSummariesByAssigneeId(currentUser.getId());
+        PageInfo<TicketSummaryResponse> pageInfo = new PageInfo<>(records);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),
@@ -274,8 +287,7 @@ public class  TicketServiceImpl implements TicketService {
         if(!Objects.equals(ticket.getCreatorId(), currentUser.getId())){
             throw new BusinessException(ErrorCode.TICKET_ACCESS_DENIED);
         }
-        List<TicketHistory> ticketHistories = ticketHistoryMapper.findByTicketId(id);
-        return ticketConverter.toHistoryResponseList(ticketHistories);
+        return ticketHistoryMapper.findResponsesByTicketId(id);
     }
 
     @Override
@@ -291,6 +303,13 @@ public class  TicketServiceImpl implements TicketService {
         if(!Objects.equals(ticket.getStatus(), TicketStatus.PENDING)){
             throw new BusinessException(ErrorCode.INVALID_TICKET_STATUS_TRANSITION);
         }
+        Asset asset = assetMapper.findById(request.getAssetId());
+        if(asset == null){
+            throw new BusinessException(ErrorCode.ASSET_NOT_FOUND);
+        }
+        if(!Objects.equals(asset.getStatus(),1)) {
+            throw new BusinessException(ErrorCode.ACCOUNT_DISABLED);
+        }
         String title = request.getTitle().trim();
         String description = request.getDescription().trim();
         String category = request.getCategory()
@@ -304,12 +323,12 @@ public class  TicketServiceImpl implements TicketService {
         ticket.setCategory(category);
         ticket.setPriority(priority);
         ticket.setDeadlineAt(calculateDeadline(priority));
+        ticket.setAssetId(asset.getId());
         int affectedRows = ticketMapper.updatePendingTicket(ticket,user.getId());
         if (affectedRows != 1){
             throw new BusinessException(ErrorCode.DATABASE_OPERATION_FAILED,"工单修改失败");
         }
-        Ticket savedTicket = ticketMapper.findById(id);
-        return ticketConverter.toDetailResponse(savedTicket);
+        return ticketMapper.findDetailResponseById(id);
     }
 
     @Override
@@ -322,9 +341,8 @@ public class  TicketServiceImpl implements TicketService {
             throw new BusinessException(ErrorCode.INVALID_PAGE_PARAMETER,"每页的数量必须在1-100之间");
         }
         PageHelper.startPage(page,size);
-        List<Ticket> tickets = ticketMapper.findOverdueTickets();
-        PageInfo<Ticket> pageInfo = new PageInfo<>(tickets);
-        List<TicketSummaryResponse> records = ticketConverter.toSummaryResponseList(tickets);
+        List<TicketSummaryResponse> records = ticketMapper.findOverdueSummaries();
+        PageInfo<TicketSummaryResponse> pageInfo = new PageInfo<>(records);
         return new PageResponse<>(
                 records,
                 pageInfo.getTotal(),

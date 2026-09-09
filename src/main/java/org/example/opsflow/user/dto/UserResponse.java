@@ -16,5 +16,7 @@ public class UserResponse {
 
     private Long departmentId;
 
+    private String departmentName;
+
     private Integer status;
 }

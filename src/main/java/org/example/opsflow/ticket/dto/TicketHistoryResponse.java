@@ -14,6 +14,8 @@ public class TicketHistoryResponse {
 
     private Long operatorId;
 
+    private String operatorName;
+
     private TicketAction action;
 
     private TicketStatus fromStatus;

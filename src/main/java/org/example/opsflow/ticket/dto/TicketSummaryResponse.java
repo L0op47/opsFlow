@@ -14,8 +14,16 @@ public class TicketSummaryResponse {
     private String category;
     private TicketPriority priority;
     private TicketStatus status;
+
+    private Long creatorId;
+    private String creatorName;
+
     private Long assigneeId;
+    private String assigneeName;
+
     private Long departmentId;
+    private String departmentName;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deadlineAt;
